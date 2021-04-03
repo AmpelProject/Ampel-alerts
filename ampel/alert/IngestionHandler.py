@@ -13,7 +13,7 @@ from ampel.type import ChannelId
 from ampel.core.UnitLoader import PT
 from ampel.core.AmpelContext import AmpelContext
 from ampel.util.mappings import build_unsafe_dict_id
-from ampel.db.DBUpdatesBuffer import DBUpdatesBuffer
+from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
 from ampel.alert.AmpelAlert import AmpelAlert
 from ampel.content.DataPoint import DataPoint
 from ampel.abstract.ingest.AbsStockT2Ingester import AbsStockT2Ingester

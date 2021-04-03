@@ -16,8 +16,8 @@ from ampel.content.Compound import Compound
 from ampel.content.DataPoint import DataPoint
 from ampel.content.StockDocument import StockDocument
 from ampel.content.T2Document import T2Document
-from ampel.ingest.CompoundBluePrint import CompoundBluePrint
-from ampel.ingest.T1DefaultCombiner import T1DefaultCombiner
+from ampel.compile.CompoundBluePrint import CompoundBluePrint
+from ampel.compile.T1DefaultCombiner import T1DefaultCombiner
 from ampel.log.AmpelLogger import AmpelLogger
 from ampel.enum.T2SysRunState import T2SysRunState
 from ampel.type import ChannelId, StockId, T2UnitResult

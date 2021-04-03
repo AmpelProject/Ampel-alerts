@@ -5,9 +5,9 @@ import pytest
 
 from ampel.demo.unit.base.DemoPointT2Unit import DemoPointT2Unit
 from ampel.dev.DevAmpelContext import DevAmpelContext
-from ampel.ingest.PointT2Ingester import PointT2Ingester
-from ampel.ingest.StockIngester import StockIngester
-from ampel.ingest.StockT2Ingester import StockT2Ingester
+from ampel.mongo.update.PointT2Ingester import PointT2Ingester
+from ampel.mongo.update.StockIngester import StockIngester
+from ampel.mongo.update.StockT2Ingester import StockT2Ingester
 from ampel.model.AlertProcessorDirective import AlertProcessorDirective
 
 from .dummy_units import (
@@ -22,7 +22,7 @@ from .dummy_units import (
 
 @pytest.fixture
 def patch_mongo(monkeypatch):
-    monkeypatch.setattr("ampel.db.AmpelDB.MongoClient", mongomock.MongoClient)
+    monkeypatch.setattr("ampel.core.AmpelDB.MongoClient", mongomock.MongoClient)
 
 
 @pytest.fixture

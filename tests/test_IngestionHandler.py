@@ -2,8 +2,8 @@ import pytest
 
 from ampel.alert.AmpelAlert import AmpelAlert
 from ampel.alert.IngestionHandler import IngestionHandler
-from ampel.db.DBUpdatesBuffer import DBUpdatesBuffer
-from ampel.ingest.StockIngester import StockIngester
+from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
+from ampel.mongo.update.StockIngester import StockIngester
 from ampel.log.AmpelLogger import AmpelLogger, DEBUG
 from ampel.log.LogsBufferDict import LogsBufferDict
 from ampel.model.AlertProcessorDirective import AlertProcessorDirective

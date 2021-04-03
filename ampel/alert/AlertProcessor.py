@@ -17,7 +17,7 @@ from ampel.core.AmpelContext import AmpelContext
 from ampel.base.AuxUnitRegister import AuxUnitRegister
 from ampel.util.mappings import merge_dict
 from ampel.util.freeze import recursive_unfreeze
-from ampel.db.DBUpdatesBuffer import DBUpdatesBuffer
+from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
 from ampel.alert.FilterBlocksHandler import FilterBlocksHandler
 from ampel.alert.IngestionHandler import IngestionHandler
 
