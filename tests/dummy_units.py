@@ -12,18 +12,18 @@ from ampel.abstract.ingest.AbsStateT2Compiler import AbsStateT2Compiler
 from ampel.abstract.ingest.AbsStateT2Ingester import AbsStateT2Ingester
 from ampel.abstract.ingest.AbsT2Ingester import AbsT2Ingester
 from ampel.alert.AmpelAlert import AmpelAlert
-from ampel.content.Compound import Compound
+from ampel.content.T1Document import T1Document
 from ampel.content.DataPoint import DataPoint
 from ampel.content.StockDocument import StockDocument
 from ampel.content.T2Document import T2Document
 from ampel.compile.CompoundBluePrint import CompoundBluePrint
 from ampel.compile.T1DefaultCombiner import T1DefaultCombiner
 from ampel.log.AmpelLogger import AmpelLogger
-from ampel.enum.T2SysRunState import T2SysRunState
+from ampel.enum.T2DocumentCode import T2DocumentCode
 from ampel.type import ChannelId, StockId, T2UnitResult
 
 if TYPE_CHECKING:
-    from ampel.content.PhotoCompound import PhotoCompound
+    from ampel.content.PhotoT1Document import PhotoT1Document
 
 class DummyAlertContentIngester(AbsAlertContentIngester[AmpelAlert, DataPoint]):
     alert_history_length = 1
@@ -76,7 +76,7 @@ class DummyCompoundIngester(AbsCompoundIngester):
 
             comp_dict = blue_print.get_eff_compound(eff_comp_id)
 
-            comp_set_on_ins: PhotoCompound = {
+            comp_set_on_ins: PhotoT1Document = {
                 "_id": eff_comp_id,
                 "stock": stock_id,
                 "tag": list(blue_print.get_comp_tags(eff_comp_id)),
@@ -195,7 +195,7 @@ class DummyStateT2Ingester(AbsStateT2Ingester):
                 "stock": stock_id,
                 "unit": t2_id,
                 "config": run_config,
-                "status": T2SysRunState.NEW.value,
+                "code": T2DocumentCode.NEW.value,
             }
 
             if self.tags:
@@ -223,7 +223,7 @@ class DummyStateT2Ingester(AbsStateT2Ingester):
 
 
 class DummyStateT2Unit(AbsStateT2Unit):
-    def run(self, compound: Compound, datapoints: Iterable[DataPoint]) -> T2UnitResult:
+    def run(self, compound: T1Document, datapoints: Iterable[DataPoint]) -> T2UnitResult:
         return {"size": len(compound["body"])}
 
 
