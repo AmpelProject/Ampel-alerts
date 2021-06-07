@@ -44,7 +44,7 @@ tomlkit = {version = "^0.7.0"}
 pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
 pytest-mock = "^3.6.1"
-mongomock = "^3.22.1"
+mongomock = "^3.23.0"
 mypy = "^0.812"
 
 [build-system]
