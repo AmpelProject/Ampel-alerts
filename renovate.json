@@ -1,5 +1,23 @@
 {
   "extends": [
     "config:base"
+  ],
+  "schedule": "monthly",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true,
+      "groupName": "dev dependencies"
+    },
+    {
+      "matchPackageNames": ["^ampel-*"],
+      "schedule": null,
+      "automerge": true,
+      "groupName": "ampel packages"
+    }
   ]
 }
