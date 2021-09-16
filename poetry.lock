@@ -27,14 +27,14 @@ python-versions = "*"
 
 [[package]]
 name = "ampel-core"
-version = "0.8.0a9"
+version = "0.8.0a10"
 description = "Asynchronous and Modular Platform with Execution Layers"
 category = "main"
 optional = false
 python-versions = ">=3.9,<3.10"
 
 [package.dependencies]
-ampel-interface = "0.8.0-alpha.6"
+ampel-interface = ">=0.8.0-alpha.9,<0.9.0"
 prometheus-client = ">=0.10,<0.12"
 psutil = ">=5.8.0,<6.0.0"
 pydantic = ">=1.8.1,<2.0.0"
@@ -53,7 +53,7 @@ docs = ["Sphinx (>=3.5.1,<5.0.0)", "sphinx-press-theme (>=0.5.1,<0.9.0)", "sphin
 
 [[package]]
 name = "ampel-interface"
-version = "0.8.0a6"
+version = "0.8.0a9"
 description = "Base classes for the Ampel analysis platform"
 category = "main"
 optional = false
@@ -152,7 +152,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "charset-normalizer"
-version = "2.0.4"
+version = "2.0.5"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
 category = "main"
 optional = true
@@ -533,7 +533,7 @@ python-versions = "*"
 
 [[package]]
 name = "sphinx"
-version = "4.1.2"
+version = "4.2.0"
 description = "Python documentation generator"
 category = "main"
 optional = true
@@ -792,12 +792,12 @@ alabaster = [
     {file = "alabaster-0.7.12.tar.gz", hash = "sha256:a661d72d58e6ea8a57f7a86e37d86716863ee5e92788398526d58b26a4e4dc02"},
 ]
 ampel-core = [
-    {file = "ampel-core-0.8.0a9.tar.gz", hash = "sha256:9bbdd92cfadfc48a91a49c37c8c33a6de0e0219a4920777bf4153d0c1ace1c64"},
-    {file = "ampel_core-0.8.0a9-py3-none-any.whl", hash = "sha256:00e9b3acd926e9037e7312261c31cfdc187d32f3bc1d3cda6581b8e5c50049c4"},
+    {file = "ampel-core-0.8.0a10.tar.gz", hash = "sha256:d7ea23ad29ab7d0c1f7f77c246097ccf9b2e4eb837d13c0ffcba62494864a7d8"},
+    {file = "ampel_core-0.8.0a10-py3-none-any.whl", hash = "sha256:d5dce6ddfabf00c57155c09c1a966cef5ae9daa6a947beb2a3e564f1837ea5cd"},
 ]
 ampel-interface = [
-    {file = "ampel-interface-0.8.0a6.tar.gz", hash = "sha256:68e56cc3888724a2c20cb43b5f946f27ea25fee9741770c1736020874819ef90"},
-    {file = "ampel_interface-0.8.0a6-py3-none-any.whl", hash = "sha256:e46497f8c54fcf587f241ee5acafa792e161e0be5a019786bbadab74a36faeec"},
+    {file = "ampel-interface-0.8.0a9.tar.gz", hash = "sha256:79a652b64c80a71afdbc29d1ad6e37e60f0ba4c6529d02f42ced9262554bec11"},
+    {file = "ampel_interface-0.8.0a9-py3-none-any.whl", hash = "sha256:db566feece3510189ab2bd8cd43b38524e7453091aae985d2e96d4c5a1eaa56a"},
 ]
 ampel-photometry = [
     {file = "ampel-photometry-0.8.0a0.tar.gz", hash = "sha256:68d7a3ec4b7d276872fc07d9cd751bb5b99c4753e3e5f740db4c268155695d79"},
@@ -832,8 +832,8 @@ chardet = [
     {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
 ]
 charset-normalizer = [
-    {file = "charset-normalizer-2.0.4.tar.gz", hash = "sha256:f23667ebe1084be45f6ae0538e4a5a865206544097e4e8bbcacf42cd02a348f3"},
-    {file = "charset_normalizer-2.0.4-py3-none-any.whl", hash = "sha256:0c8911edd15d19223366a194a513099a302055a962bca2cec0f54b8b63175d8b"},
+    {file = "charset-normalizer-2.0.5.tar.gz", hash = "sha256:7098e7e862f6370a2a8d1a6398cd359815c45d12626267652c3f13dec58e2367"},
+    {file = "charset_normalizer-2.0.5-py3-none-any.whl", hash = "sha256:fa471a601dfea0f492e4f4fca035cd82155e65dc45c9b83bf4322dfab63755dd"},
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
@@ -1325,8 +1325,8 @@ snowballstemmer = [
     {file = "snowballstemmer-2.1.0.tar.gz", hash = "sha256:e997baa4f2e9139951b6f4c631bad912dfd3c792467e2f03d7239464af90e914"},
 ]
 sphinx = [
-    {file = "Sphinx-4.1.2-py3-none-any.whl", hash = "sha256:46d52c6cee13fec44744b8c01ed692c18a640f6910a725cbb938bc36e8d64544"},
-    {file = "Sphinx-4.1.2.tar.gz", hash = "sha256:3092d929cd807926d846018f2ace47ba2f3b671b309c7a89cd3306e80c826b13"},
+    {file = "Sphinx-4.2.0-py3-none-any.whl", hash = "sha256:98a535c62a4fcfcc362528592f69b26f7caec587d32cd55688db580be0287ae0"},
+    {file = "Sphinx-4.2.0.tar.gz", hash = "sha256:94078db9184491e15bce0a56d9186e0aec95f16ac20b12d00e06d4e36f1058a6"},
 ]
 sphinx-autodoc-typehints = [
     {file = "sphinx-autodoc-typehints-1.12.0.tar.gz", hash = "sha256:193617d9dbe0847281b1399d369e74e34cd959c82e02c7efde077fca908a9f52"},
