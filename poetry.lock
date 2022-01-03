@@ -78,11 +78,11 @@ docs = ["Sphinx (>=4.0.0,<5.0.0)", "sphinx-autodoc-typehints (>=1.11.1,<2.0.0)",
 
 [[package]]
 name = "argcomplete"
-version = "1.12.3"
+version = "2.0.0"
 description = "Bash tab completion for argparse"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 
 [package.extras]
 test = ["coverage", "flake8", "pexpect", "wheel"]
@@ -842,8 +842,8 @@ ampel-interface = [
     {file = "ampel_interface-0.8.3a3-py3-none-any.whl", hash = "sha256:66c0cdb0a7362301743eceb3174d0a5afd7cdb04beb216db88c9fa987dcccd67"},
 ]
 argcomplete = [
-    {file = "argcomplete-1.12.3-py2.py3-none-any.whl", hash = "sha256:291f0beca7fd49ce285d2f10e4c1c77e9460cf823eef2de54df0c0fec88b0d81"},
-    {file = "argcomplete-1.12.3.tar.gz", hash = "sha256:2c7dbffd8c045ea534921e63b0be6fe65e88599990d8dc408ac8c542b72a5445"},
+    {file = "argcomplete-2.0.0-py2.py3-none-any.whl", hash = "sha256:cffa11ea77999bb0dd27bb25ff6dc142a6796142f68d45b1a26b11f58724561e"},
+    {file = "argcomplete-2.0.0.tar.gz", hash = "sha256:6372ad78c89d662035101418ae253668445b391755cfe94ea52f1b9d22425b20"},
 ]
 async-timeout = [
     {file = "async-timeout-4.0.2.tar.gz", hash = "sha256:2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15"},
