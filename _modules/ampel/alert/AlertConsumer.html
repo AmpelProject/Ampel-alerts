@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ampel.alert.AlertConsumer &#8212; ampel-alerts 0.8.2-alpha.7 documentation</title>
+    <title>ampel.alert.AlertConsumer &#8212; ampel-alerts 0.8.2-alpha.8 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
@@ -21,7 +21,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">ampel-alerts 0.8.2-alpha.7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">ampel-alerts 0.8.2-alpha.8 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">ampel.alert.AlertConsumer</a></li> 
       </ul>
@@ -465,6 +465,9 @@
 			<span class="n">event_hdlr</span><span class="o">.</span><span class="n">add_extra</span><span class="p">(</span><span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 			<span class="n">report_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ampel_db</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">exc</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
 
+			<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raise_exc</span><span class="p">:</span>
+				<span class="k">raise</span> <span class="n">e</span>
+
 		<span class="c1"># Also executed after SIGINT and SIGTERM</span>
 		<span class="k">finally</span><span class="p">:</span>
 
@@ -491,6 +494,9 @@
 				<span class="c1"># Try to insert doc into trouble collection (raises no exception)</span>
 				<span class="c1"># Possible exception will be logged out to console in any case</span>
 				<span class="n">report_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ampel_db</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">exc</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">raise_exc</span><span class="p">:</span>
+					<span class="k">raise</span> <span class="n">e</span>
 
 		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_if_no_alert</span> <span class="ow">and</span> <span class="n">iter_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
 			<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exit_if_no_alert</span><span class="p">)</span>
@@ -565,7 +571,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">ampel-alerts 0.8.2-alpha.7 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">ampel-alerts 0.8.2-alpha.8 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">ampel.alert.AlertConsumer</a></li> 
       </ul>
