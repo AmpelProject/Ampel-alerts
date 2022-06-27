@@ -335,13 +335,13 @@ with various levels of detail.</p>
 <p>Record of the results of filter evaluation, in particular for rejected alerts.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ampel.abstract.AbsAlertRegister.AbsAlertRegister.file">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ampel/abstract/AbsAlertRegister.html#AbsAlertRegister.file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ampel.abstract.AbsAlertRegister.AbsAlertRegister.file" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ampel/abstract/AbsAlertRegister.html#AbsAlertRegister.file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ampel.abstract.AbsAlertRegister.AbsAlertRegister.file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Record the result of the filter.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>alert</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">AmpelAlertProtocol</span></code>) – the alert a filter was applied to</p></li>
-<li><p><strong>filter_res</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – result of the filter; <code class="docutils literal notranslate"><span class="pre">None</span></code> if the alert was rejected</p></li>
+<li><p><strong>filter_res</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – filter rejection code (negative)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
