@@ -14,18 +14,18 @@ files = [
 
 [[package]]
 name = "ampel-core"
-version = "0.8.3b17"
+version = "0.8.3b18"
 description = "Alice in Modular Provenance-Enabled Land"
 category = "main"
 optional = false
 python-versions = ">=3.10,<3.11"
 files = [
-    {file = "ampel_core-0.8.3b17-py3-none-any.whl", hash = "sha256:8d3d26231238b9128b8c03903e0cdf1c87c85fb7822861ff4c9bb1a0bc9f090c"},
-    {file = "ampel_core-0.8.3b17.tar.gz", hash = "sha256:1e159074fb51004bbef25c6e0d32c65316c43210018f1f3552c05b1123758478"},
+    {file = "ampel_core-0.8.3b18-py3-none-any.whl", hash = "sha256:0b06ec7cb7c24dc47f3f193473891c648553f7e99ebcff79f54574fd4eb5138b"},
+    {file = "ampel_core-0.8.3b18.tar.gz", hash = "sha256:8f171a9d5fb7da89ded3faf91a9717a37107a0feb813c5e2b1799d83138b4cd2"},
 ]
 
 [package.dependencies]
-ampel-interface = ">=0.8.3-beta.12,<0.9.0"
+ampel-interface = ">=0.8.3-beta.13,<0.9.0"
 appdirs = ">=1.4.4,<2.0.0"
 prometheus-client = ">=0.10,<0.12"
 psutil = ">=5.8.0,<6.0.0"
@@ -43,14 +43,14 @@ slack = ["slack-sdk (>=3.18.1,<4.0.0)"]
 
 [[package]]
 name = "ampel-interface"
-version = "0.8.3b12"
+version = "0.8.3b13"
 description = "Base classes for the Ampel analysis platform"
 category = "main"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ampel_interface-0.8.3b12-py3-none-any.whl", hash = "sha256:2c9173c0d3cb8f62910f2640687704ec20cf622f479d95e2afb6c61976b26204"},
-    {file = "ampel_interface-0.8.3b12.tar.gz", hash = "sha256:d6ff35edad43efb04266b57d5a0619bee116d6c812eab138dbf2817ca2b6dda8"},
+    {file = "ampel_interface-0.8.3b13-py3-none-any.whl", hash = "sha256:cf11416d93f1c5fd7f78fc8c74b290cced015c16eb5a2ab0c58606fbddb1fad8"},
+    {file = "ampel_interface-0.8.3b13.tar.gz", hash = "sha256:ea837ae7a4fb8cf0fb20b7d6c0af2b4f64e51e0f3443e181b21cf678456debe3"},
 ]
 
 [package.dependencies]
@@ -1340,4 +1340,4 @@ server = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "5b7b4ffc6f9f84708255e010c4ea9081c29510a00d4302f1709f5bc116f163df"
+content-hash = "dffc583d84155209be557431c1b8c0fdc9e9599418e7fea9077a476b59b3e45c"
