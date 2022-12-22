@@ -55,7 +55,7 @@ class BasicFilterCondition(AmpelBaseModel):
 			raise ValueError("Len must be >= 0")
 		self._operator = PhotoAlertQuery._ops[self.operator]
 		self._criteria = [el.dict() for el in ([self.criteria] if isinstance(self.criteria, PhotoAlertQuery) else self.criteria)]
-
+		self._logicalConnection = PhotoAlertQuery._ops[self.logicalConnection]
 
 
 class BasicMultiFilter(AbsAlertFilter):
@@ -127,7 +127,7 @@ class BasicMultiFilter(AbsAlertFilter):
 			if i == 0:
 				current_res = filter_res[i]
 			else:
-				current_res = self.filters[i].logicalConnection( # type: ignore[misc]
+				current_res = self.filters[i]._logicalConnection( # type: ignore[misc]
 					current_res, filter_res[i]
 				)
 
