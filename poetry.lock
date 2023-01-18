@@ -1454,4 +1454,4 @@ server = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "001e3f2b7d1740336ff7e302d041120182621d5a2b0758f3162b42a519c8d388"
+content-hash = "4b8c33a60083cf0a1287c62fc211cc0ea34ca20179b60190f2a497c5813d12d9"
