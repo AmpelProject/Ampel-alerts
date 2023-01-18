@@ -30,7 +30,7 @@ from ampel.log.utils import report_exception
 from ampel.log.AmpelLoggingError import AmpelLoggingError
 from ampel.log.LightLogRecord import LightLogRecord
 from ampel.alert.AlertConsumerError import AlertConsumerError
-from ampel.alert.AlertConsumerMetrics import stat_alerts, stat_accepted, stat_time
+from ampel.alert.AlertConsumerMetrics import AlertConsumerMetrics, stat_time
 from ampel.model.ingest.CompilerOptions import CompilerOptions
 from ampel.model.AlertConsumerModel import AlertConsumerModel
 
@@ -181,10 +181,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		# Setup stats
 		#############
 
-		stats = {
-			"alerts": stat_alerts,
-			"accepted": stat_accepted.labels("any")
-		}
+		stats = AlertConsumerMetrics(self._fbh.chan_names)
 
 		event_hdlr.set_tier(0)
 		run_id = event_hdlr.get_run_id()
@@ -219,12 +216,6 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		)
 
 		any_filter = any([fb.filter_model for fb in self._fbh.filter_blocks])
-		# if bypassing filters, track passing rates at top level
-		if not any_filter:
-			stats["filter_accepted"] = [
-				stat_accepted.labels(channel)
-				for channel in self._fbh.chan_names
-			]
 
 		# Setup ingesters
 		ing_hdlr = ChainedIngestionHandler(
@@ -328,12 +319,12 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 									self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
 				else:
 					# if bypassing filters, track passing rates at top level
-					for counter in stats["filter_accepted"]:
+					for counter in stats.filter_accepted:
 						counter.inc()
 
 				if filter_results:
 
-					stats["accepted"].inc()
+					stats.accepted.inc()
 
 					try:
 						alert_extra: dict[str, Any] = {'alert': alert.id}
@@ -381,7 +372,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 						db_logging_handler.handle(lr)
 
 				iter_count += 1
-				stats["alerts"].inc()
+				stats.alerts.inc()
 
 				updates_buffer.check_push()
 				if db_logging_handler:
