@@ -1,4 +1,4 @@
-<img align="left" src="https://desycloud.desy.de/index.php/s/mWtE987dgK4NdFc/preview" width="150" height="150"/>  
+<img align="left" src="https://user-images.githubusercontent.com/17532220/213289600-aa1757d2-44ba-4de2-b12d-520ddb5d39ff.png" width="150" height="150"/>  
 <br>
 
 # Alert support for AMPEL
