@@ -33,12 +33,6 @@ class LegacyChannelTemplate(AbsEasyChannelTemplate):
         return ret
 
 
-@pytest.fixture
-def first_pass_config(testing_config):
-    with open(testing_config, "rb") as f:
-        return yaml.safe_load(f)
-
-
 @pytest.mark.parametrize(
     "t2_compute,target,expected,exception",
     [

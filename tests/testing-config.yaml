@@ -631,6 +631,18 @@ unit:
     distrib: ampel-alerts
     file: /Users/jakob/Documents/ZTF/Ampel-v0.8/Ampel-alerts/conf/ampel-alerts/ampel.yml
     version: 0.8.0a0
+  AlertConsumer:
+    fqn: ampel.alert.AlertConsumer
+    base:
+    - AlertConsumer
+    - AbsEventUnit
+    - ContextUnit
+    - AlertConsumerModel
+    - AmpelBaseModel
+    xxh64: 17153677155904106478
+    distrib: ampel-alerts
+    version: 0.8.3a8
+    source: /Users/jakob/Documents/ZTF/Ampel-v0.8.3/Ampel-alerts/conf/ampel-alerts/ampel.yml
 process:
   t0: {}
   t1: {}
@@ -645,3 +657,5 @@ confid: {}
 resource:
   mongo: nonesuch
   ampel-ztf/archive: denada
+template:
+  ingest_alerts: ampel.template.EasyAlertConsumerTemplate
