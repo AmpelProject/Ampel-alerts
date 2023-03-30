@@ -4,7 +4,7 @@
 # License:             BSD-3-Clause
 # Author:              valery brinnel <firstname.lastname@gmail.com>
 # Date:                10.10.2017
-# Last Modified Date:  12.08.2022
+# Last Modified Date:  30.03.2023
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 import sys
@@ -161,6 +161,20 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 			self._cancel_run = reason
 
 
+	def get_ingestion_handler(self,
+		run_id: int,
+		updates_buffer: DBUpdatesBuffer,
+		logger: AmpelLogger
+	) -> ChainedIngestionHandler:
+
+		return ChainedIngestionHandler(
+			self.context, self.shaper, self.directives, updates_buffer,
+			run_id, tier = 0, logger = logger, database = self.database,
+			trace_id = {'alertconsumer': self._trace_id},
+			compiler_opts = self.compiler_opts or CompilerOptions()
+		)
+
+
 	def process_alerts(self) -> None:
 		"""
 		Convenience method to process all alerts from a given loader until it dries out
@@ -217,13 +231,8 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 		any_filter = any([fb.filter_model for fb in self._fbh.filter_blocks])
 
-		# Setup ingesters
-		ing_hdlr = ChainedIngestionHandler(
-			self.context, self.shaper, self.directives, updates_buffer,
-			run_id, tier = 0, logger = logger, database = self.database,
-			trace_id = {'alertconsumer': self._trace_id},
-			compiler_opts = self.compiler_opts or CompilerOptions()
-		)
+		# Sets ingesters up
+		ing_hdlr = self.get_ingestion_handler(run_id, updates_buffer, logger)
 
 		# Loop variables
 		iter_max = self.iter_max
