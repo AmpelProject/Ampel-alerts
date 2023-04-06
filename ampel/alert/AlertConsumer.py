@@ -4,21 +4,20 @@
 # License:             BSD-3-Clause
 # Author:              valery brinnel <firstname.lastname@gmail.com>
 # Date:                10.10.2017
-# Last Modified Date:  30.03.2023
+# Last Modified Date:  05.04.2023
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 import sys
-from signal import signal, SIGINT, SIGTERM, default_int_handler
 from typing import Any
+from typing_extensions import Self
+from collections.abc import Sequence
 from pymongo.errors import PyMongoError
+from signal import signal, SIGINT, SIGTERM, default_int_handler
 
 from ampel.core.AmpelContext import AmpelContext
-from ampel.util.mappings import get_by_path, merge_dict
-from ampel.util.freeze import recursive_unfreeze
 from ampel.enum.EventCode import EventCode
 from ampel.model.UnitModel import UnitModel
 from ampel.core.EventHandler import EventHandler
-from ampel.dev.DevAmpelContext import DevAmpelContext
 from ampel.abstract.AbsAlertSupplier import AbsAlertSupplier
 from ampel.abstract.AbsEventUnit import AbsEventUnit
 from ampel.base.AuxUnitRegister import AuxUnitRegister
@@ -33,6 +32,8 @@ from ampel.alert.AlertConsumerError import AlertConsumerError
 from ampel.alert.AlertConsumerMetrics import AlertConsumerMetrics, stat_time
 from ampel.model.ingest.CompilerOptions import CompilerOptions
 from ampel.model.AlertConsumerModel import AlertConsumerModel
+from ampel.util.mappings import get_by_path, merge_dict
+from ampel.util.freeze import recursive_unfreeze
 
 
 class AlertConsumer(AbsEventUnit, AlertConsumerModel):
@@ -60,10 +61,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		      context, process_name="VAL_TEST2/T0/ztf_uw_public", override={'iter_max': 100}
 		  )
 		"""
-		args = context.get_config().get( # type: ignore
-			f"process.{process_name}.processor.config", dict
-		)
-
+		args = context.get_config().get(f"process.{process_name}.processor.config", dict)
 		if args is None:
 			raise ValueError(f"process.{process_name}.processor.config is None")
 
@@ -71,6 +69,15 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 			args = merge_dict(recursive_unfreeze(args), override) # type: ignore
 
 		return cls(context=context, **args)
+
+
+	@classmethod # override (just set defaults for templates)
+	def new(cls,
+		templates: str | Sequence[str] = ('resolve_run_time_aliases', 'hash_t2_config'),
+		**kwargs
+	) -> Self:
+		""" Hashes t2 unit configs on the fly (to use with jupyter for ex.) """
+		return super().new(templates=templates, **kwargs)
 
 
 	def __init__(self, **kwargs) -> None:
@@ -102,19 +109,6 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 				f"logging.{self.log_profile}.console", dict
 			)
 		)
-
-		if isinstance(kwargs['context'], DevAmpelContext):
-
-			kwargs['directives'] = [
-				kwargs['context'].hash_ingest_directive(el, logger=logger)
-				for el in kwargs['directives']
-			]
-
-			if "debug" in self.log_profile:
-				from ampel.util.pretty import prettyjson
-				logger.info("Auto-hashed ingestive directive(s):")
-				for el in kwargs['directives']:
-					print(prettyjson(el))
 
 		super().__init__(**kwargs)
 
@@ -162,15 +156,15 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 
 	def get_ingestion_handler(self,
-		run_id: int,
+		event_hdlr: EventHandler,
 		updates_buffer: DBUpdatesBuffer,
 		logger: AmpelLogger
 	) -> ChainedIngestionHandler:
 
 		return ChainedIngestionHandler(
 			self.context, self.shaper, self.directives, updates_buffer,
-			run_id, tier = 0, logger = logger, database = self.database,
-			trace_id = {'alertconsumer': self._trace_id},
+			event_hdlr.get_run_id(), tier = 0, logger = logger,
+			database = self.database, trace_id = {'alertconsumer': self._trace_id},
 			compiler_opts = self.compiler_opts or CompilerOptions()
 		)
 
@@ -231,8 +225,8 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 		any_filter = any([fb.filter_model for fb in self._fbh.filter_blocks])
 
-		# Sets ingesters up
-		ing_hdlr = self.get_ingestion_handler(run_id, updates_buffer, logger)
+		# Set ingesters up
+		ing_hdlr = self.get_ingestion_handler(event_hdlr, updates_buffer, logger)
 
 		# Loop variables
 		iter_max = self.iter_max
