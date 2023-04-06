@@ -4,7 +4,7 @@
 # License:             BSD-3-Clause
 # Author:              valery brinnel <firstname.lastname@gmail.com>
 # Date:                16.10.2019
-# Last Modified Date:  16.07.2021
+# Last Modified Date:  05.04.2023
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 import ujson
@@ -54,7 +54,7 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 
 
 	def craft_t0_process(self,
-		config: FirstPassConfig | dict[str, Any],
+		alconf: FirstPassConfig | dict[str, Any],
 		controller: str | dict[str, Any],
 		supplier: str | dict[str, Any],
 		shaper: str | dict[str, Any],
@@ -88,7 +88,7 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 			"processor": {
 				"unit": "AlertConsumer",
 				"config": self.craft_t0_processor_config(
-					self.channel, config, self.t2_compute, supplier, shaper, combiner,
+					self.channel, alconf, self.t2_compute, supplier, shaper, combiner,
 					self.t0_filter.dict(exclude_unset=True) if self.t0_filter else None, muxer, compiler_opts
 				)
 			}
@@ -100,7 +100,7 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 	@classmethod
 	def craft_t0_processor_config(cls,
 		channel: ChannelId,
-		config: FirstPassConfig | dict[str, Any],
+		alconf: FirstPassConfig | dict[str, Any],
 		t2_compute: list[T2Compute],
 		supplier: str | dict[str, Any],
 		shaper: str | dict[str, Any],
@@ -130,12 +130,12 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 				"AbsTiedStateT2Unit",
 				"AbsTiedCustomStateT2Unit",
 			],
-			config
+			alconf
 		)
 
-		stock_t2s = filter_units(t2_compute, "AbsStockT2Unit", config)
-		point_t2s = filter_units(t2_compute, "AbsPointT2Unit", config)
-		check_tied_units(t2_compute, config)
+		stock_t2s = filter_units(t2_compute, "AbsStockT2Unit", alconf)
+		point_t2s = filter_units(t2_compute, "AbsPointT2Unit", alconf)
+		check_tied_units(t2_compute, alconf)
 
 		ingest: dict[str, Any] = {}
 
