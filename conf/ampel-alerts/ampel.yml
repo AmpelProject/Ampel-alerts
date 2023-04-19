@@ -13,3 +13,6 @@ unit:
   
 # Logical unit
 - ampel.alert.filter.BasicMultiFilter
+
+template:
+  ingest_alerts: ampel.template.EasyAlertConsumerTemplate

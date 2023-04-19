@@ -1,0 +1,12 @@
+name: foo
+task:
+  - template: "ingest_alerts"
+    config:
+      channel: TEST_CHANNEL
+      supplier:
+        unit: UnitTestAlertSupplier
+        config:
+          alerts: []
+      shaper: NoShaper
+      compiler_opts: {}
+      combiner: "T1SimpleCombiner"
