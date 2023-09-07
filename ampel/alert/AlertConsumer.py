@@ -225,6 +225,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		updates_buffer = DBUpdatesBuffer(
 			self._ampel_db, run_id, logger,
 			error_callback = self.set_cancel_run,
+			acknowledge_callback = self.alert_supplier.acknowledge,
 			catch_signals = False, # we do it ourself
 			max_size = self.updates_buffer_size
 		)
@@ -331,54 +332,58 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 					for counter in stats.filter_accepted:
 						counter.inc()
 
-				if filter_results:
+				with updates_buffer.group_updates():
 
-					stats.accepted.inc()
+					if filter_results:
 
-					try:
-						alert_extra: dict[str, Any] = {'alert': alert.id}
-						if self.include_alert_extra_with_keys and alert.extra:
-							for key, path in self.include_alert_extra_with_keys.items():
-								alert_extra[key] = get_by_path(alert.extra, path)
-						with stat_time.labels("ingest").time():
-							ing_hdlr.ingest(
-								alert.datapoints, filter_results, stock_id, alert.tag,
-								alert_extra, alert.extra.get('stock') if alert.extra else None
-							)
-					except (PyMongoError, AmpelLoggingError) as e:
-						print("%s: abording run() procedure" % e.__class__.__name__)
-						report_ingest_error(e, alert, filter_results)
-						raise e
+						stats.accepted.inc()
 
-					except Exception as e:
-						report_ingest_error(e, alert, filter_results)
-
-						if self.raise_exc:
+						try:
+							alert_extra: dict[str, Any] = {'alert': alert.id}
+							if self.include_alert_extra_with_keys and alert.extra:
+								for key, path in self.include_alert_extra_with_keys.items():
+									alert_extra[key] = get_by_path(alert.extra, path)
+							with stat_time.labels("ingest").time():
+								ing_hdlr.ingest(
+									alert.datapoints, filter_results, stock_id, alert.tag,
+									alert_extra, alert.extra.get('stock') if alert.extra else None
+								)
+						except (PyMongoError, AmpelLoggingError) as e:
+							print("%s: abording run() procedure" % e.__class__.__name__)
+							report_ingest_error(e, alert, filter_results)
 							raise e
 
-						if self.error_max:
-							err += 1
+						except Exception as e:
+							report_ingest_error(e, alert, filter_results)
 
-						if err == self.error_max:
-							logger.error("Max number of error reached, breaking alert processing")
-							self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
+							if self.raise_exc:
+								raise e
 
-				else:
+							if self.error_max:
+								err += 1
 
-					# All channels reject this alert
-					# no log entries goes into the main logs collection sinces those are redirected to Ampel_rej.
+							if err == self.error_max:
+								logger.error("Max number of error reached, breaking alert processing")
+								self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
 
-					# So we add a notification manually. For that, we don't use logger
-					# cause rejection messages were alreary logged into the console
-					# by the StreamHandler in channel specific RecordBufferingHandler instances.
-					# So we address directly db_logging_handler, and for that, we create
-					# a LogDocument manually.
-					lr = LightLogRecord(logger.name, LogFlag.INFO | logger.base_flag)
-					lr.stock = stock_id
-					lr.channel = reduced_chan_names # type: ignore[assignment]
-					lr.extra = {'a': alert.id, 'allout': True}
-					if db_logging_handler:
-						db_logging_handler.handle(lr)
+					else:
+
+						# All channels reject this alert
+						# no log entries goes into the main logs collection sinces those are redirected to Ampel_rej.
+
+						# So we add a notification manually. For that, we don't use logger
+						# cause rejection messages were alreary logged into the console
+						# by the StreamHandler in channel specific RecordBufferingHandler instances.
+						# So we address directly db_logging_handler, and for that, we create
+						# a LogDocument manually.
+						lr = LightLogRecord(logger.name, LogFlag.INFO | logger.base_flag)
+						lr.stock = stock_id
+						lr.channel = reduced_chan_names # type: ignore[assignment]
+						lr.extra = {'a': alert.id, 'allout': True}
+						if db_logging_handler:
+							db_logging_handler.handle(lr)
+					
+					updates_buffer.acknowledge_on_push(alert)
 
 				iter_count += 1
 				stats.alerts.inc()

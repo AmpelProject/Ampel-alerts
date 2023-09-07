@@ -36,3 +36,7 @@ class AbsAlertLoader(Generic[T], AmpelABC, AmpelBaseModel, abstract=True):
 	@abstractmethod
 	def __next__(self) -> T:
 		...
+
+	def acknowledge(self, alerts: Iterator[T]) -> None:
+		"""Inform the source that a batch of alerts has been handled"""
+		...
