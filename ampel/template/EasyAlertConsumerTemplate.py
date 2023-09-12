@@ -55,7 +55,7 @@ class EasyAlertConsumerTemplate(AbsConfigMorpher):
                 muxer=self._config_as_dict(self.muxer),
                 compiler_opts=self.compiler_opts.dict(),
             ),
-        ).dict()
+        ).dict(exclude_unset=True)
 
     @overload
     @staticmethod

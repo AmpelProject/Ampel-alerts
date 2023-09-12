@@ -104,7 +104,7 @@ class LegacyChannelTemplate(AbsEasyChannelTemplate):
         ),
     ],
 )
-def test_state_t2_instantiation(t2_compute, target, expected, exception, first_pass_config):
+def test_state_t2_instantiation(t2_compute, target, expected, exception, dev_context, dummy_units):
     """
     Template creates state T2s and checks for missing dependencies
     """
@@ -122,7 +122,7 @@ def test_state_t2_instantiation(t2_compute, target, expected, exception, first_p
                 "t0_filter": {"unit": "DummyFilter"},
                 "t2_compute": t2_compute,
             }
-        ).get_processes(None, first_pass_config)
+        ).get_processes(None, dev_context.config.get())
     if exception:
         return
 

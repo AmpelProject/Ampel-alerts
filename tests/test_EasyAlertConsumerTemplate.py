@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from pathlib import Path
 import sys
 from typing import TYPE_CHECKING
+from ampel.alert.AlertConsumer import AlertConsumer
 
 import pytest
 
@@ -9,6 +10,7 @@ from ampel.dev.DevAmpelContext import DevAmpelContext
 from ampel.log.AmpelLogger import AmpelLogger
 from ampel.template.EasyAlertConsumerTemplate import EasyAlertConsumerTemplate
 from ampel.alert.AmpelAlert import AmpelAlert
+from ampel.model.UnitModel import UnitModel
 
 from ampel.cli.main import main
 
@@ -21,7 +23,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.parametrize(["muxer"], [(None,), ("DummyMuxer",)])
 def test_instantiation(
-    first_pass_config, dev_context: DevAmpelContext, muxer, dummy_units
+    dev_context: DevAmpelContext, muxer, dummy_units
 ):
 
     tpl = EasyAlertConsumerTemplate(
@@ -56,11 +58,14 @@ def test_instantiation(
         }
     )
 
-    model = tpl.get_model(first_pass_config, AmpelLogger.get_logger())
+    model = UnitModel(**tpl.morph(dev_context.config.get(), AmpelLogger.get_logger()))
 
-    consumer = dev_context.new_context_unit(
-        model.unit, process_name="foo", **model.config
-    )
+    Klass = dev_context.loader.get_class_by_name(model.unit, AlertConsumer)
+    consumer = Klass.new(context=dev_context, process_name="foo", **model.config | {"raise_exc": True})
+
+    # consumer = dev_context.new_context_unit(
+    #     model.unit, process_name="foo", **model.config | {"raise_exc": True}
+    # )
     assert consumer.run() == 1
 
     # extra points inserted by muxer
