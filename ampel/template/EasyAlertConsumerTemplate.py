@@ -1,6 +1,6 @@
 from typing import Any, overload
 
-from ampel.abstract.AbsProcessorTemplate import AbsProcessorTemplate
+from ampel.abstract.AbsConfigMorpher import AbsConfigMorpher
 from ampel.log.AmpelLogger import AmpelLogger
 from ampel.model.ingest.CompilerOptions import CompilerOptions
 from ampel.model.ingest.FilterModel import FilterModel
@@ -10,7 +10,7 @@ from ampel.template.AbsEasyChannelTemplate import AbsEasyChannelTemplate
 from ampel.types import ChannelId
 
 
-class EasyAlertConsumerTemplate(AbsProcessorTemplate):
+class EasyAlertConsumerTemplate(AbsConfigMorpher):
     """Configure an AlertConsumer (or subclass) for a single channel"""
 
     #: Channel tag for any documents created
@@ -39,15 +39,14 @@ class EasyAlertConsumerTemplate(AbsProcessorTemplate):
 
     extra: dict = {}
 
-    # Mandatory override
-    def get_model(self, config: dict[str, Any], logger: AmpelLogger) -> UnitModel:
+    def morph(self, ampel_config: dict[str, Any], logger: AmpelLogger) -> dict[str, Any]:
 
         return UnitModel(
             unit=self.unit,
             config=self.extra
             | AbsEasyChannelTemplate.craft_t0_processor_config(
                 channel=self.channel,
-                config=config,
+                alconf=ampel_config,
                 t2_compute=self.t2_compute,
                 supplier=self._get_supplier(),
                 shaper=self._config_as_dict(self.shaper),
@@ -56,7 +55,7 @@ class EasyAlertConsumerTemplate(AbsProcessorTemplate):
                 muxer=self._config_as_dict(self.muxer),
                 compiler_opts=self.compiler_opts.dict(),
             ),
-        )
+        ).dict()
 
     @overload
     @staticmethod
