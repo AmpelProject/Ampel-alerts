@@ -14,18 +14,18 @@ files = [
 
 [[package]]
 name = "ampel-core"
-version = "0.8.7a0"
+version = "0.9.0"
 description = "Alice in Modular Provenance-Enabled Land"
 category = "main"
 optional = false
 python-versions = ">=3.10,<3.12"
 files = [
-    {file = "ampel_core-0.8.7a0-py3-none-any.whl", hash = "sha256:162d1b7e4c22eb7aa317742bd5e7ec15033c58f1e9ababc06eed24da6df1c947"},
-    {file = "ampel_core-0.8.7a0.tar.gz", hash = "sha256:07815524982202331abf828e60c4ae89c0128f6b721ee6553afe358af7deb08c"},
+    {file = "ampel_core-0.9.0-py3-none-any.whl", hash = "sha256:ef1ce0cfec9f6d8963de0d8e00bea3e52649457616cac57c19146dc23837873e"},
+    {file = "ampel_core-0.9.0.tar.gz", hash = "sha256:bd0e8c96985faf3e2befd3db1d3d76a23f4530382efa0ba4199f99432b3c0c4f"},
 ]
 
 [package.dependencies]
-ampel-interface = ">=0.8.10,<0.9.0"
+ampel-interface = ">=0.9.0,<0.10.0"
 appdirs = ">=1.4.4,<2.0.0"
 prometheus-client = ">=0.16,<0.17"
 psutil = ">=5.8.0,<6.0.0"
@@ -44,14 +44,14 @@ slack = ["slack-sdk (>=3.18.1,<4.0.0)"]
 
 [[package]]
 name = "ampel-interface"
-version = "0.8.10"
+version = "0.9.0"
 description = "Base classes for the Ampel analysis platform"
 category = "main"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ampel_interface-0.8.10-py3-none-any.whl", hash = "sha256:37828a72e3c7df2e01142dfdd9fd3f6fbea39451593a490e97fbf54c6eb6b4cb"},
-    {file = "ampel_interface-0.8.10.tar.gz", hash = "sha256:411e78348dc71b0d767abfe48025f208d70b301926228f6fe9bfd79c9593bb53"},
+    {file = "ampel_interface-0.9.0-py3-none-any.whl", hash = "sha256:3d2d2450cb42f2e51141b6fff1ce20436c0b5ccbfb119d82776e1f459b44d5cf"},
+    {file = "ampel_interface-0.9.0.tar.gz", hash = "sha256:c78e0f5c6f1154d8f9182e62fb6eeb3dd0df1c20d355d8bf26277d2579a8eb7c"},
 ]
 
 [package.dependencies]
@@ -1410,4 +1410,4 @@ server = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "3ddca159f666926e676a0f964c12deebac255068f0e7ce9499bd34222592526c"
+content-hash = "ff1553773e2143c3dd3a8c64b56950f37b494b2affcbfcf5645ca41dd1b6b5d9"
