@@ -107,6 +107,7 @@ def test_job_file(
                 "job",
                 "--config",
                 str(testing_config),
+                "--no-conf-check",
                 "--schema",
                 str(Path(__file__).parent / "template_job.yaml"),
             ]
