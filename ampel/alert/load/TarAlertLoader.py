@@ -46,11 +46,9 @@ class TarAlertLoader(AbsAlertLoader[IO[bytes]]):
 			raise ValueError("Please provide value either for 'file_path' or 'file_obj'")
 
 		if self.start != 0:
-			count = 0
-			for tarinfo in self.tar_file:
-				count += 1
-				if count < self.start:
-					continue
+			for count, _ in enumerate(self.tar_file, 1):
+				if count >= self.start:
+					break
 
 
 	def __iter__(self):

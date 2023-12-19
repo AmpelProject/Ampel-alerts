@@ -36,3 +36,7 @@ class AbsAlertSupplier(AmpelUnit, AmpelABC, abstract=True):
 	@abstractmethod
 	def __iter__(self) -> Iterator[AmpelAlertProtocol]:
 		...
+
+	def acknowledge(self, alerts: Iterator[AmpelAlertProtocol]) -> None:
+		"""Inform the source that a batch of alerts has been handled"""
+		...
