@@ -17,18 +17,26 @@ from ampel.base.decorator import abstractmethod
 from ampel.base.AmpelBaseModel import AmpelBaseModel
 
 
-class AbsAlertLoader(Generic[T], AmpelABC, AmpelBaseModel, abstract=True):
+class AbsAlertLoader(AmpelABC, AmpelBaseModel, Generic[T], abstract=True):
+
+	@property
+	def logger(self) -> AmpelLogger:
+		return self._logger
+
+	@property
+	def resources(self) -> dict[str, Resource]:
+		return self._resources
 
 	def __init__(self, **kwargs) -> None:
 		super().__init__(**kwargs)
-		self.logger: AmpelLogger = AmpelLogger.get_logger()
-		self.resources: dict[str, Resource] = {}
+		self._logger: AmpelLogger = AmpelLogger.get_logger()
+		self._resources: dict[str, Resource] = {}
 
 	def set_logger(self, logger: AmpelLogger) -> None:
-		self.logger = logger
+		self._logger = logger
 
 	def add_resource(self, name: str, value: Resource) -> None:
-		self.resources[name] = value
+		self._resources[name] = value
 
 	def __iter__(self) -> Iterator[T]: # type: ignore
 		return self

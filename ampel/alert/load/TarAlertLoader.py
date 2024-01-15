@@ -9,13 +9,20 @@
 
 import tarfile
 from gzip import GzipFile
-from typing import IO
+from typing import IO, TypeAlias, TYPE_CHECKING
 from ampel.log.AmpelLogger import AmpelLogger
 from ampel.types import Traceless
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 
+# use IOBase at runtime, because isinstance(anything, IO[bytes]) is always
+# False. 
+if TYPE_CHECKING:
+	IOBase: TypeAlias = IO[bytes]
+else:
+	from io import IOBase
 
-class TarAlertLoader(AbsAlertLoader[IO[bytes]]):
+
+class TarAlertLoader(AbsAlertLoader[IOBase]):
 	"""
 	Load alerts from a ``tar`` file. The archive must be laid out like the
 	`ZTF public alert archive <https://ztf.uw.edu/alerts/public/>`_, i.e. one
@@ -24,7 +31,7 @@ class TarAlertLoader(AbsAlertLoader[IO[bytes]]):
 
 	tar_mode: str = 'r:gz'
 	start: int = 0
-	file_obj: None | IO[bytes] | tarfile.ExFileObject
+	file_obj: None | IOBase
 	file_path: None | str
 	logger: Traceless[AmpelLogger] # actually optional
 
@@ -36,17 +43,17 @@ class TarAlertLoader(AbsAlertLoader[IO[bytes]]):
 
 		super().__init__(**kwargs)
 
-		self.chained_tal: 'None | TarAlertLoader' = None
+		self._chained_tal: 'None | TarAlertLoader' = None
 
 		if self.file_obj:
-			self.tar_file = tarfile.open(fileobj=self.file_obj, mode=self.tar_mode)
+			self._tar_file = tarfile.open(fileobj=self.file_obj, mode=self.tar_mode)
 		elif self.file_path:
-			self.tar_file = tarfile.open(self.file_path, mode=self.tar_mode)
+			self._tar_file = tarfile.open(self.file_path, mode=self.tar_mode)
 		else:
 			raise ValueError("Please provide value either for 'file_path' or 'file_obj'")
 
 		if self.start != 0:
-			for count, _ in enumerate(self.tar_file, 1):
+			for count, _ in enumerate(self._tar_file, 1):
 				if count >= self.start:
 					break
 
@@ -55,7 +62,7 @@ class TarAlertLoader(AbsAlertLoader[IO[bytes]]):
 		return self
 
 
-	def __next__(self) -> IO[bytes]:
+	def __next__(self) -> IOBase:
 		"""
 		FYI:
 		from io import IOBase
@@ -69,15 +76,15 @@ class TarAlertLoader(AbsAlertLoader[IO[bytes]]):
 		# public interface. Beware the temptation to call getmembers() instead;
 		# while this does return .members, it also reads the entire archive as
 		# a side-effect.
-		self.tar_file.members.clear() # type: ignore
+		self._tar_file.members.clear() # type: ignore
 
-		if self.chained_tal is not None:
+		if self._chained_tal is not None:
 			file_obj = self.get_chained_next()
 			if file_obj is not None:
 				return file_obj
 
 		# Get next element in tar archive
-		tar_info = self.tar_file.next()
+		tar_info = self._tar_file.next()
 
 		# Reach end of archive
 		if tar_info is None:
@@ -92,12 +99,12 @@ class TarAlertLoader(AbsAlertLoader[IO[bytes]]):
 		if tar_info.isfile():
 
 			# extractfile returns a file like obj
-			file_obj = self.tar_file.extractfile(tar_info)
+			file_obj = self._tar_file.extractfile(tar_info)
 			assert file_obj is not None
 
 			# Handle tars with nested tars
 			if tar_info.name.endswith('.tar.gz'):
-				self.chained_tal = TarAlertLoader(file_obj=file_obj)
+				self._chained_tal = TarAlertLoader(file_obj=file_obj)
 				if (subfile_obj := self.get_chained_next()) is not None:
 					return subfile_obj
 				else:
@@ -109,11 +116,11 @@ class TarAlertLoader(AbsAlertLoader[IO[bytes]]):
 		return next(self)
 
 
-	def get_chained_next(self) -> None | IO[bytes]:
-		assert self.chained_tal is not None
-		file_obj = next(self.chained_tal, None)
+	def get_chained_next(self) -> None | IOBase:
+		assert self._chained_tal is not None
+		file_obj = next(self._chained_tal, None)
 		if file_obj is None:
-			self.chained_tal = None
+			self._chained_tal = None
 			return None
 
 		return file_obj
