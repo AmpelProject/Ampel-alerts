@@ -113,7 +113,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		super().__init__(**kwargs)
 
 		self._ampel_db = self.context.get_database()
-		self.alert_supplier = AuxUnitRegister.new_unit(
+		self._alert_supplier = AuxUnitRegister.new_unit(
 			model = self.supplier,
 			sub_type = AbsAlertSupplier
 		)
@@ -129,6 +129,11 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		#signal(SIGTERM, self.register_sigterm)
 		signal(SIGTERM, default_int_handler) # type: ignore[arg-type]
 		logger.info("AlertConsumer setup completed")
+
+
+	@property
+	def alert_supplier(self) -> AbsAlertSupplier:
+		return self._alert_supplier
 
 
 	def register_signal(self, signum: int, frame) -> None:
@@ -202,11 +207,11 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 			base_flag = LogFlag.T0 | LogFlag.CORE | self.base_log_flag
 		)
 
-		self.alert_supplier.set_logger(logger)
+		self._alert_supplier.set_logger(logger)
 
 		if event_hdlr.resources:
 			for k, v in event_hdlr.resources.items():
-				self.alert_supplier.add_resource(k, v)
+				self._alert_supplier.add_resource(k, v)
 
 		if logger.verbose:
 			logger.log(VERBOSE, "Pre-run setup")
@@ -219,7 +224,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		updates_buffer = DBUpdatesBuffer(
 			self._ampel_db, run_id, logger,
 			error_callback = self.set_cancel_run,
-			acknowledge_callback = self.alert_supplier.acknowledge,
+			acknowledge_callback = self._alert_supplier.acknowledge,
 			catch_signals = False, # we do it ourself
 			max_size = self.updates_buffer_size
 		)
@@ -277,7 +282,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 			register_signal = self.register_signal
 
 			# Iterate over alerts
-			for alert in self.alert_supplier:
+			for alert in self._alert_supplier:
 
 				# Allow execution to complete for this alert (loop exited after ingestion of current alert)
 				signal(SIGINT, register_signal)
