@@ -30,11 +30,11 @@ class FileAlertLoader(AbsAlertLoader[BytesIO]):
 		if self.logger:
 			self.logger.info(f"Registering {len(self.files)} file(s) to load")
 
-		self.iter_files = iter(self.files)
+		self._iter_files = iter(self.files)
 
 	def __iter__(self):
 		return self
 
 	def __next__(self) -> BytesIO:
-		with open(next(self.iter_files), "rb") as alert_file:
+		with open(next(self._iter_files), "rb") as alert_file:
 			return BytesIO(alert_file.read())

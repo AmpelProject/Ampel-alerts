@@ -13,19 +13,14 @@ from ampel.alert.AmpelAlert import AmpelAlert
 from ampel.model.UnitModel import UnitModel
 
 from ampel.cli.main import main
+from pytest_mock import MockerFixture
 
 if TYPE_CHECKING:
     from ampel.config.builder.FirstPassConfig import FirstPassConfig
 
 
-
-
-
 @pytest.mark.parametrize(["muxer"], [(None,), ("DummyMuxer",)])
-def test_instantiation(
-    dev_context: DevAmpelContext, muxer, dummy_units
-):
-
+def test_instantiation(dev_context: DevAmpelContext, muxer, dummy_units):
     tpl = EasyAlertConsumerTemplate(
         **{
             "channel": "TEST_CHANNEL",
@@ -61,7 +56,9 @@ def test_instantiation(
     model = UnitModel(**tpl.morph(dev_context.config.get(), AmpelLogger.get_logger()))
 
     Klass = dev_context.loader.get_class_by_name(model.unit, AlertConsumer)
-    consumer = Klass.new(context=dev_context, process_name="foo", **model.config | {"raise_exc": True})
+    consumer = Klass.new(
+        context=dev_context, process_name="foo", **model.config | {"raise_exc": True}
+    )
 
     # consumer = dev_context.new_context_unit(
     #     model.unit, process_name="foo", **model.config | {"raise_exc": True}
@@ -97,9 +94,11 @@ def run(args: list[str]) -> None | int | str:
 
 
 def test_job_file(
-    testing_config,
-    dev_context: DevAmpelContext, dummy_units
+    testing_config, dev_context: DevAmpelContext, dummy_units, mocker: MockerFixture
 ):
+    mock = mocker.patch.object(
+        AlertConsumer, "proceed", side_effect=AlertConsumer.proceed, autospec=True
+    )
     assert (
         run(
             [
@@ -111,5 +110,7 @@ def test_job_file(
                 "--schema",
                 str(Path(__file__).parent / "template_job.yaml"),
             ]
-        ) is None
+        )
+        is None
     )
+    assert mock.called

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ampel-alerts"
-version = "0.9.1a0"
+version = "0.10.0a0"
 description = "Alert support for the Ampel system"
 authors = ["Valery Brinnel"]
 maintainers = ["Jakob van Santen <jakob.van.santen@desy.de>"]
@@ -30,15 +30,19 @@ python = "^3.10"
 Sphinx = {version = ">=7.2.0,<7.3.0", optional = true}
 sphinx-autodoc-typehints = {version = "^1.11.1", optional = true}
 tomlkit = {version = "^0.12.0", optional=true}
-ampel-interface = {version = "^0.9.1a1"}
-ampel-core = {version = "^0.9.1a0"}
+ampel-core = {version = ">=0.10.0a0,<0.11"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4.4"
 pytest-cov = "^4.1.0"
 pytest-mock = "^3.12.0"
 mongomock = "^4.1.2"
+# mongomock uses pkg_resources
+setuptools = {version = "*", python = ">=3.12"}
 mypy = "^1.8.0"
+
+[tool.poetry.group.dev.dependencies]
+types-ujson = "^5.9.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -50,3 +54,35 @@ docs = ["Sphinx", "sphinx-autodoc-typehints", "tomlkit"]
 
 [tool.coverage.run]
 relative_files = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+filterwarnings = [
+    "error",
+    # Expected `list[definition-ref]` but got `tuple` - serialized value may not be as expected
+    "ignore:Pydantic serializer warnings:UserWarning",
+    # UserWarning: Field name "job_sig" shadows an attribute in parent "AbsEventUnit"
+    "ignore:Field name \".*\" shadows an attribute in parent:UserWarning",
+    "ignore:pkg_resources is deprecated:DeprecationWarning",
+    "ignore:Deprecated call to `pkg_resources:DeprecationWarning",
+]
+
+[tool.mypy]
+namespace_packages = true
+show_error_codes = true
+plugins = [
+    "pydantic.mypy"
+]
+
+[tool.pydantic-mypy]
+init_typed = true
+
+[[tool.mypy.overrides]]
+module = "ampel.abstract.*"
+disable_error_code = "empty-body"
+
+[[tool.mypy.overrides]]
+module = [
+    "fastavro",
+]
+ignore_missing_imports = true
