@@ -1,9 +1,14 @@
+import pytest
 import tarfile
+import uuid
 from io import BytesIO
+from pathlib import Path
 
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
+from ampel.alert.load.DirAlertLoader import DirAlertLoader
 from ampel.alert.load.FileAlertLoader import FileAlertLoader
 from ampel.alert.load.TarAlertLoader import TarAlertLoader
+from ampel.alert.load.DirFileNamesLoader import DirFileNamesLoader
 
 
 def test_dummy():
@@ -21,11 +26,6 @@ def test_dummy():
     assert len(list(loader)) == 10
 
 
-def test_FileAlertLoader(testing_config):
-    loader = FileAlertLoader(files=[str(testing_config)])
-    assert next(loader).read() == testing_config.read_bytes()
-
-
 def test_TarAlertLoader():
     value = b"foo"
 
@@ -38,4 +38,38 @@ def test_TarAlertLoader():
     buf.seek(0)
 
     loader = TarAlertLoader(file_obj=buf)
-    assert next(loader).read() == value
+    for item in loader:
+        assert item.read() == value
+
+
+@pytest.fixture()
+def dummy_alert(tmpdir: Path) -> tuple[Path, bytes]:
+    path = Path(tmpdir / "dummy.txt")
+    content = uuid.uuid4().hex
+    path.write_text(content)
+    return path, content.encode()
+
+
+def test_FileAlertLoader(dummy_alert: tuple[Path, bytes]):
+    path, content = dummy_alert
+    loader = FileAlertLoader(files=[str(path)])
+    for item in loader:
+        assert item.read() == content
+
+    with pytest.raises(ValueError):
+        FileAlertLoader(files=[])
+
+
+@pytest.mark.parametrize("klass", (DirAlertLoader, DirFileNamesLoader))
+def test_DirAlertLoader(klass, dummy_alert: tuple[Path, bytes]):
+    path, content = dummy_alert
+    loader = klass(
+        folder=str(path.parent),
+        extension=path.suffix[1:],
+        max_entries=1,
+    )
+    loader.logger.verbose = 2
+    for item in loader:
+        assert item.read() == content if klass is DirAlertLoader else str(path)
+
+

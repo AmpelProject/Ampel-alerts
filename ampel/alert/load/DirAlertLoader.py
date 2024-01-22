@@ -24,8 +24,8 @@ class DirAlertLoader(AbsAlertLoader[StringIO | BytesIO]):
 
 	def __init__(self, **kwargs) -> None:
 		super().__init__(**kwargs)
-		self.files: list[str] = []
-		self.open_mode = "rb" if self.binary_mode else "r"
+		self._files: list[str] = []
+		self._open_mode = "rb" if self.binary_mode else "r"
 
 
 	def set_extension(self, extension: str) -> None:
@@ -50,7 +50,7 @@ class DirAlertLoader(AbsAlertLoader[StringIO | BytesIO]):
 
 
 	def add_files(self, arg: str):
-		self.files.append(arg)
+		self._files.append(arg)
 		self.logger.debug(f"Adding {len(arg)} files to the list")
 
 
@@ -84,24 +84,24 @@ class DirAlertLoader(AbsAlertLoader[StringIO | BytesIO]):
 
 		if self.max_entries is not None:
 			self.logger.debug("Filtering files using max_entries criterium")
-			self.files = all_files[:self.max_entries]
+			self._files = all_files[:self.max_entries]
 		else:
-			self.files = all_files
+			self._files = all_files
 
-		self.logger.debug(f"File list contains {len(self.files)} elements")
+		self.logger.debug(f"File list contains {len(self._files)} elements")
 
 
 	def __next__(self) -> StringIO | BytesIO:
 
-		if not self.files:
+		if not self._files:
 			self.build_file_list()
-			self.iter_files = iter(self.files)
+			self._iter_files = iter(self._files)
 
-		if (fpath := next(self.iter_files, None)) is None:
+		if (fpath := next(self._iter_files, None)) is None:
 			raise StopIteration
 
 		if self.logger.verbose > 1:
 			self.logger.debug("Loading " + fpath)
 
-		with open(fpath, self.open_mode) as alert_file:
+		with open(fpath, self._open_mode) as alert_file:
 			return BytesIO(alert_file.read()) if self.binary_mode else StringIO(alert_file.read())
