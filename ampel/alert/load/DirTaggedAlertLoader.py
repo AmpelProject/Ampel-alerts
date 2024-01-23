@@ -28,11 +28,11 @@ class DirTaggedAlertLoader(DirAlertLoader):
 
 	def __next__(self) -> tuple[StringIO | BytesIO, None | list[str | int]]: # type: ignore[override]
 
-		if not self.files:
+		if not self._files:
 			self.build_file_list()
-			self.iter_files = iter(self.files)
+			self._iter_files = iter(self._files)
 
-		if (fpath := next(self.iter_files, None)) is None:
+		if (fpath := next(self._iter_files, None)) is None:
 			raise StopIteration
 
 		if self.logger.verbose > 1:
@@ -40,7 +40,7 @@ class DirTaggedAlertLoader(DirAlertLoader):
 
 		# basename("/usr/local/auth.AAA.BBB.py").split(".")[1:-1] -> ['AAA', 'BBB']
 		base = basename(fpath).split(".")
-		with open(fpath, self.open_mode) as alert_file:
+		with open(fpath, self._open_mode) as alert_file:
 			return (
 				BytesIO(alert_file.read()) if self.binary_mode else StringIO(alert_file.read()), # type: ignore
 				None if len(base) == 1 else base[1:-1]

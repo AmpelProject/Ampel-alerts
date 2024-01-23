@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ampel-alerts"
-version = "0.10.0a0"
+version = "0.10.0a1"
 description = "Alert support for the Ampel system"
 authors = ["Valery Brinnel"]
 maintainers = ["Jakob van Santen <jakob.van.santen@desy.de>"]
@@ -57,6 +57,7 @@ relative_files = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
+addopts = "--showlocals -r a"
 filterwarnings = [
     "error",
     # Expected `list[definition-ref]` but got `tuple` - serialized value may not be as expected

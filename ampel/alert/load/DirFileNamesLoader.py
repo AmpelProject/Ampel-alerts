@@ -37,13 +37,13 @@ class DirFileNamesLoader(AbsAlertLoader[str]):
 			self.logger.debug("Filtering files using max_entries criterium")
 			files = files[:self.max_entries]
 
-		self.iter_files = iter(files)
+		self._iter_files = iter(files)
 		self.logger.debug(f"File list contains {len(files)} elements")
 
 
 	def __next__(self) -> str:
 
-		fpath = next(self.iter_files)
+		fpath = next(self._iter_files)
 		if self.logger.verbose > 1:
 			self.logger.debug("Returning " + fpath)
 
