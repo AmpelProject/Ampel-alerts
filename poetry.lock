@@ -14,18 +14,18 @@ files = [
 
 [[package]]
 name = "ampel-core"
-version = "0.8.7"
+version = "0.9.0"
 description = "Alice in Modular Provenance-Enabled Land"
 category = "main"
 optional = false
 python-versions = ">=3.10,<3.12"
 files = [
-    {file = "ampel_core-0.8.7-py3-none-any.whl", hash = "sha256:78c99c73a526aa7ad047cbd271dfd097a01fbf1afc963abbe04dba56a4cd1448"},
-    {file = "ampel_core-0.8.7.tar.gz", hash = "sha256:8ff9267023a231aa9bffd09dcb709d6e0bdc44825cbe84f926d58392779a6b9e"},
+    {file = "ampel_core-0.9.0-py3-none-any.whl", hash = "sha256:ef1ce0cfec9f6d8963de0d8e00bea3e52649457616cac57c19146dc23837873e"},
+    {file = "ampel_core-0.9.0.tar.gz", hash = "sha256:bd0e8c96985faf3e2befd3db1d3d76a23f4530382efa0ba4199f99432b3c0c4f"},
 ]
 
 [package.dependencies]
-ampel-interface = ">=0.8.10,<0.9.0"
+ampel-interface = ">=0.9.0,<0.10.0"
 appdirs = ">=1.4.4,<2.0.0"
 prometheus-client = ">=0.16,<0.17"
 psutil = ">=5.8.0,<6.0.0"
@@ -44,14 +44,14 @@ slack = ["slack-sdk (>=3.18.1,<4.0.0)"]
 
 [[package]]
 name = "ampel-interface"
-version = "0.8.11"
+version = "0.9.0"
 description = "Base classes for the Ampel analysis platform"
 category = "main"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ampel_interface-0.8.11-py3-none-any.whl", hash = "sha256:ce0c20459a4f347ad4dc1f1e3809640c6fd955fcd25372bbadabc2dea49f4ee7"},
-    {file = "ampel_interface-0.8.11.tar.gz", hash = "sha256:1c4f085760e8978f5fe1ca74cb7114e8fbdf2256b1fb232a337c1d6eb5610b5f"},
+    {file = "ampel_interface-0.9.0-py3-none-any.whl", hash = "sha256:3d2d2450cb42f2e51141b6fff1ce20436c0b5ccbfb119d82776e1f459b44d5cf"},
+    {file = "ampel_interface-0.9.0.tar.gz", hash = "sha256:c78e0f5c6f1154d8f9182e62fb6eeb3dd0df1c20d355d8bf26277d2579a8eb7c"},
 ]
 
 [package.dependencies]
@@ -61,7 +61,7 @@ ujson = ">=5.1.0,<6.0.0"
 xxhash = ">=3.0.0,<4.0.0"
 
 [package.extras]
-docs = ["Sphinx (>=6.0.0,<7.0.0)", "sphinx-autodoc-typehints (>=1.11.1,<2.0.0)", "tomlkit (>=0.12.0,<0.13.0)"]
+docs = ["Sphinx (>=6.0.0,<7.0.0)", "sphinx-autodoc-typehints (>=1.11.1,<2.0.0)", "tomlkit (>=0.11.0,<0.12.0)"]
 
 [[package]]
 name = "appdirs"
@@ -917,6 +917,7 @@ files = [
     {file = "PyYAML-6.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:bf07ee2fef7014951eeb99f56f39c9bb4af143d8aa3c21b1677805985307da34"},
     {file = "PyYAML-6.0.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:855fb52b0dc35af121542a76b9a84f8d1cd886ea97c84703eaa6d88e37a2ad28"},
     {file = "PyYAML-6.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:40df9b996c2b73138957fe23a16a4f0ba614f4c0efce1e9406a184b6d07fa3a9"},
+    {file = "PyYAML-6.0.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a08c6f0fe150303c1c6b71ebcd7213c2858041a7e01975da3a99aed1e7a378ef"},
     {file = "PyYAML-6.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6c22bec3fbe2524cde73d7ada88f6566758a8f7227bfbf93a408a9d86bcc12a0"},
     {file = "PyYAML-6.0.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:8d4e9c88387b0f5c7d5f281e55304de64cf7f9c0021a3525bd3b1c542da3b0e4"},
     {file = "PyYAML-6.0.1-cp312-cp312-win32.whl", hash = "sha256:d483d2cdf104e7c9fa60c544d92981f12ad66a457afae824d146093b8c294c54"},
@@ -1473,4 +1474,4 @@ server = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "3ddca159f666926e676a0f964c12deebac255068f0e7ce9499bd34222592526c"
+content-hash = "ff1553773e2143c3dd3a8c64b56950f37b494b2affcbfcf5645ca41dd1b6b5d9"
