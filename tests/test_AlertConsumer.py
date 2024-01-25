@@ -82,6 +82,7 @@ def test_no_filter(dev_context, single_source_directive):
                     ]
                 },
             },
+            raise_exc=True,
         )
         assert ap.run() == 1
 
