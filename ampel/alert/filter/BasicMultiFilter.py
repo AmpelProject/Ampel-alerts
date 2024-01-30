@@ -108,18 +108,14 @@ class BasicMultiFilter(AbsAlertFilter):
 		    ]
 		"""
 
-		filter_res = []
-
-		for param in self.filters:
-
-			filter_res.append(
-				param._operator(
-					len(
-						alert.get_values('candid', filters = param._criteria)
-					),
-					param.len
-				)
-			)
+		filter_res = [
+			param._operator(
+				len(
+					alert.get_values('candid', filters = param._criteria)
+				),
+				param.len
+			) for param in self.filters
+		]
 
 		current_res = False
 

@@ -312,7 +312,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 								filter_results.append(res) # type: ignore[arg-type]
 
 						# Unrecoverable (logging related) errors
-						except (PyMongoError, AmpelLoggingError) as e:
+						except (PyMongoError, AmpelLoggingError) as e:  # noqa: PERF203
 							print("%s: abording run() procedure" % e.__class__.__name__)
 							report_filter_error(e, alert, fblock)
 							raise e

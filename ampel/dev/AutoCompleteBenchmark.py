@@ -178,7 +178,7 @@ class AutoCompleteBenchmark:
 					print(f'channel: {len(r)}')
 				print('')
 				print('')
-			except Exception as e:
+			except Exception as e:  # noqa: PERF203
 				print(e)
 				print(f'{name}(...) failed')
 				print('')
