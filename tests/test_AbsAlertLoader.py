@@ -57,11 +57,11 @@ def test_FileAlertLoader(dummy_alert: tuple[Path, bytes]):
     for item in loader:
         assert item.read() == content
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Parameter 'files' cannot be empty"):
         FileAlertLoader(files=[])
 
 
-@pytest.mark.parametrize("klass", (DirAlertLoader, DirFileNamesLoader))
+@pytest.mark.parametrize("klass", [DirAlertLoader, DirFileNamesLoader])
 def test_DirAlertLoader(klass, dummy_alert: tuple[Path, bytes]):
     path, content = dummy_alert
     loader = klass(

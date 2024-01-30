@@ -10,7 +10,7 @@
 import sys
 from collections.abc import Sequence
 from signal import SIGINT, SIGTERM, default_int_handler, signal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pymongo.errors import PyMongoError
 from typing_extensions import Self
@@ -36,6 +36,9 @@ from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
 from ampel.util.freeze import recursive_unfreeze
 from ampel.util.mappings import get_by_path, merge_dict
 
+if TYPE_CHECKING:
+	from ampel.alert.FilterBlock import FilterBlock
+	from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 	"""
@@ -258,17 +261,19 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		self._fbh.ready(logger, run_id)
 
 		# Shortcuts
-		report_filter_error = lambda e, alert, fblock: self._report_ap_error(
-			e, event_hdlr, logger,
-			extra = {'a': alert.id, 'section': 'filter', 'c': fblock.channel}
-		)
+		def report_filter_error(e: Exception, alert: "AmpelAlertProtocol", fblock: "FilterBlock"):
+			self._report_ap_error(
+				e, event_hdlr, logger,
+				extra = {'a': alert.id, 'section': 'filter', 'c': fblock.channel}
+			)
 
-		report_ingest_error = lambda e, alert, filter_results: self._report_ap_error(
-			e, event_hdlr, logger, extra={
-				'a': alert.id, 'section': 'ingest',
-				'c': [self.directives[el[0]].channel for el in filter_results]
-			}
-		)
+		def report_ingest_error(e: Exception, alert: "AmpelAlertProtocol", filter_results: Sequence[tuple[int, bool|int]]):
+			self._report_ap_error(
+				e, event_hdlr, logger, extra={
+					'a': alert.id, 'section': 'ingest',
+					'c': [self.directives[el[0]].channel for el in filter_results]
+				}
+			)
 
 		# Process alerts
 		################
@@ -321,12 +326,11 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 							if self.raise_exc:
 								raise e
-							else:
-								if self.error_max:
-									err += 1
-								if err == self.error_max:
-									logger.error("Max number of error reached, breaking alert processing")
-									self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
+							if self.error_max:
+								err += 1
+							if err == self.error_max:
+								logger.error("Max number of error reached, breaking alert processing")
+								self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
 				else:
 					# if bypassing filters, track passing rates at top level
 					for counter in stats.filter_accepted:

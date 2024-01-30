@@ -122,7 +122,7 @@ class BasicMultiFilter(AbsAlertFilter):
 
 		current_res = False
 
-		for i, param in enumerate(filter_res):
+		for i, _ in enumerate(filter_res):
 
 			if i == 0:
 				current_res = filter_res[i]

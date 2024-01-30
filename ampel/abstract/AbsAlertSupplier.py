@@ -7,7 +7,7 @@
 # Last Modified Date:  19.12.2022
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from typing import Iterator
+from collections.abc import Iterator
 
 from ampel.base.AmpelABC import AmpelABC
 from ampel.base.AmpelUnit import AmpelUnit

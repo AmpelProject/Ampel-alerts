@@ -18,8 +18,9 @@ if TYPE_CHECKING:
     pass
 
 
-@pytest.mark.parametrize(["muxer"], [(None,), ("DummyMuxer",)])
-def test_instantiation(dev_context: DevAmpelContext, muxer, dummy_units):
+@pytest.mark.parametrize("muxer", [None, "DummyMuxer"])
+@pytest.mark.usefixtures("_dummy_units")
+def test_instantiation(dev_context: DevAmpelContext, muxer):
     tpl = EasyAlertConsumerTemplate(
         **{
             "channel": "TEST_CHANNEL",
@@ -92,8 +93,9 @@ def run(args: list[str]) -> None | int | str:
         return se.code
 
 
+@pytest.mark.usefixtures("_dummy_units")
 def test_job_file(
-    testing_config, dev_context: DevAmpelContext, dummy_units, mocker: MockerFixture
+    testing_config, dev_context: DevAmpelContext, mocker: MockerFixture
 ):
     mock = mocker.patch.object(
         AlertConsumer, "proceed", side_effect=AlertConsumer.proceed, autospec=True

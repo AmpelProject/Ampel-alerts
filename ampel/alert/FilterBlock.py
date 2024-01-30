@@ -182,67 +182,63 @@ class FilterBlock:
 				return self.idx, res
 
 			# Filter rejected alert
-			else:
+			self._stat_rejected.inc()
 
-				self._stat_rejected.inc()
+			# 'overrule' or 'silent_overrule' requested for this filter
+			if self.overrule and alert.stock in self.stock_ids:
 
-				# 'overrule' or 'silent_overrule' requested for this filter
-				if self.overrule and alert.stock in self.stock_ids:
+				extra_ac = {'a': alert.id, 'ac': True, 's': alert.stock, 'c': self.channel}
 
-					extra_ac = {'a': alert.id, 'ac': True, 's': alert.stock, 'c': self.channel}
+				# Main logger feedback
+				self.log(INFO, None, extra=extra_ac)
 
-					# Main logger feedback
-					self.log(INFO, None, extra=extra_ac)
+				# Update count
+				self._stat_autocomplete.inc()
 
-					# Update count
-					self._stat_autocomplete.inc()
-
-					# Rejected alerts notifications can go to rejected log collection
-					# even though it was "auto-completed" because it
-					# was actually rejected by the filter/channel
-					if self.update_rej:
-
-						if self.buffer:
-							if self.rej_log_handler:
-								# Clears the buffer
-								self.forward(self.rej_log_handler, stock=alert.stock, extra=extra_ac)
-							else:
-								self.buffer.clear()
-
-						# Log minimal entry if channel did not log anything
-						else:
-							if self.rej_log_handle:
-								lrec = LightLogRecord(0, 0, None)
-								lrec.stock = alert.stock
-								lrec.extra = extra_ac
-								self.rej_log_handle(lrec)
-
-						if self.file:
-							self.file(alert, res)
-
-					# Use default t2 units (no group) as filter results
-					return self.overrule
-
-				else:
+				# Rejected alerts notifications can go to rejected log collection
+				# even though it was "auto-completed" because it
+				# was actually rejected by the filter/channel
+				if self.update_rej:
 
 					if self.buffer:
-
-						# Save possibly existing error to 'main' logs
-						if self.buf_hdlr.has_error:
-							self.forward(
-								self.logger, stock=alert.stock, extra={'a': alert.id},
-								clear=not self.rej_log_handler
-							)
-
 						if self.rej_log_handler:
-							# Send rejected logs to dedicated separate logger/handler
-							self.forward(self.rej_log_handler, stock=alert.stock, extra={'a': alert.id})
+							# Clears the buffer
+							self.forward(self.rej_log_handler, stock=alert.stock, extra=extra_ac)
+						else:
+							self.buffer.clear()
+
+					# Log minimal entry if channel did not log anything
+					else:
+						if self.rej_log_handle:
+							lrec = LightLogRecord(0, 0, None)
+							lrec.stock = alert.stock
+							lrec.extra = extra_ac
+							self.rej_log_handle(lrec)
 
 					if self.file:
 						self.file(alert, res)
 
-					# return rejection result
-					return self.rej
+				# Use default t2 units (no group) as filter results
+				return self.overrule
+
+			if self.buffer:
+
+				# Save possibly existing error to 'main' logs
+				if self.buf_hdlr.has_error:
+					self.forward(
+						self.logger, stock=alert.stock, extra={'a': alert.id},
+						clear=not self.rej_log_handler
+					)
+
+				if self.rej_log_handler:
+					# Send rejected logs to dedicated separate logger/handler
+					self.forward(self.rej_log_handler, stock=alert.stock, extra={'a': alert.id})
+
+			if self.file:
+				self.file(alert, res)
+
+			# return rejection result
+			return self.rej
 
 
 	def ready(self, logger: AmpelLogger, run_id: int) -> None:

@@ -35,7 +35,7 @@ class LegacyChannelTemplate(AbsEasyChannelTemplate):
 
 
 @pytest.mark.parametrize(
-    "t2_compute,target,expected,exception",
+    ("t2_compute","target","expected","exception"),
     [
         # single, statebound T2
         (
@@ -105,7 +105,8 @@ class LegacyChannelTemplate(AbsEasyChannelTemplate):
         ),
     ],
 )
-def test_state_t2_instantiation(t2_compute, target, expected, exception, dev_context, dummy_units):
+@pytest.mark.usefixtures("_dummy_units")
+def test_state_t2_instantiation(t2_compute, target, expected, exception, dev_context):
     """
     Template creates state T2s and checks for missing dependencies
     """

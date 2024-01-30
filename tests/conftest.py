@@ -9,24 +9,24 @@ from ampel.dev.DevAmpelContext import DevAmpelContext
 from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 
-@pytest.fixture
-def patch_mongo(monkeypatch):
+@pytest.fixture()
+def _patch_mongo(monkeypatch):
     monkeypatch.setattr("ampel.core.AmpelDB.MongoClient", mongomock.MongoClient)
 
 
-@pytest.fixture
+@pytest.fixture()
 def testing_config():
     return Path(__file__).parent / "testing-config.yaml"
 
 
-@pytest.fixture
+@pytest.fixture()
 def first_pass_config(testing_config):
     with open(testing_config, "rb") as f:
         return yaml.safe_load(f)
 
 
-@pytest.fixture
-def dev_context(patch_mongo, testing_config):
+@pytest.fixture()
+def dev_context(_patch_mongo, testing_config):
     return DevAmpelContext.load(testing_config)
 
 
@@ -35,8 +35,8 @@ class DummyFilter(AbsAlertFilter):
         return True
 
 
-@pytest.fixture
-def dummy_units(dev_context: DevAmpelContext):
+@pytest.fixture()
+def _dummy_units(dev_context: DevAmpelContext):
 
     # register dummy units in-process so gen_config_id can find them
     from ampel.test import dummy
