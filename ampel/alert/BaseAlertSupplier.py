@@ -74,7 +74,7 @@ class BaseAlertSupplier(AbsAlertSupplier, abstract=True):
 		elif self.deserialize == "avro":
 
 			from fastavro import reader
-			def avro_next(arg: IOBase): # noqa: E306
+			def avro_next(arg: IOBase):
 				return next(reader(arg))
 
 			self._deserialize = avro_next

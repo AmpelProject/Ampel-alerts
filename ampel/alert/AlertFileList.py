@@ -41,7 +41,7 @@ class AlertFileList:
 		self.min_index = min_index
 		self.max_index = max_index
 		self.logger.debug(f"Min index set to: {self.min_index}")
-		self.logger.debug(f"Max index set to: {str(self.max_index)}")
+		self.logger.debug(f"Max index set to: {self.max_index:s}")
 
 
 	def set_max_entries(self, max_entries):
