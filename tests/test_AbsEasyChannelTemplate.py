@@ -1,9 +1,10 @@
-from typing import Any, TYPE_CHECKING
-from ampel.model.ChannelModel import ChannelModel
-import pytest, yaml
 import contextlib
+from typing import TYPE_CHECKING, Any
+
+import pytest
 
 from ampel.log.AmpelLogger import AmpelLogger
+from ampel.model.ChannelModel import ChannelModel
 from ampel.template.AbsEasyChannelTemplate import AbsEasyChannelTemplate
 
 if TYPE_CHECKING:   

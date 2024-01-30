@@ -8,12 +8,13 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 from typing import Iterator
-from ampel.log.AmpelLogger import AmpelLogger
+
 from ampel.base.AmpelABC import AmpelABC
-from ampel.base.decorator import abstractmethod
 from ampel.base.AmpelUnit import AmpelUnit
-from ampel.struct.Resource import Resource
+from ampel.base.decorator import abstractmethod
+from ampel.log.AmpelLogger import AmpelLogger
 from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+from ampel.struct.Resource import Resource
 
 
 class AbsAlertSupplier(AmpelUnit, AmpelABC, abstract=True):

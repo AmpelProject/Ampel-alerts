@@ -1,14 +1,15 @@
-import pytest
 import tarfile
 import uuid
 from io import BytesIO
 from pathlib import Path
 
+import pytest
+
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 from ampel.alert.load.DirAlertLoader import DirAlertLoader
+from ampel.alert.load.DirFileNamesLoader import DirFileNamesLoader
 from ampel.alert.load.FileAlertLoader import FileAlertLoader
 from ampel.alert.load.TarAlertLoader import TarAlertLoader
-from ampel.alert.load.DirFileNamesLoader import DirFileNamesLoader
 
 
 def test_dummy():

@@ -9,6 +9,7 @@
 
 import logging
 
+
 # pylint: disable=logging-format-interpolation
 class AlertFileList:
 
@@ -59,7 +60,8 @@ class AlertFileList:
 		""" """
 		self.logger.debug("Building internal file list")
 
-		import glob, os
+		import glob
+		import os
 		all_files = sorted(glob.glob(self.folder + "/" + self.extension), key=os.path.getmtime)
 
 		if self.min_index is not None:

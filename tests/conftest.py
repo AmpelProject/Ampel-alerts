@@ -1,12 +1,12 @@
-from ampel.abstract.AbsAlertFilter import AbsAlertFilter
-from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+from pathlib import Path
+
 import mongomock
 import pytest
 import yaml
-from pathlib import Path
 
+from ampel.abstract.AbsAlertFilter import AbsAlertFilter
 from ampel.dev.DevAmpelContext import DevAmpelContext
-from ampel.test.dummy import DummyPointT2Unit, DummyStateT2Unit, DummyStockT2Unit
+from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 
 @pytest.fixture

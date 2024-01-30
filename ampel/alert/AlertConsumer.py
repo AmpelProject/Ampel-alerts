@@ -8,32 +8,33 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 import sys
-from typing import Any
-from typing_extensions import Self
 from collections.abc import Sequence
-from pymongo.errors import PyMongoError
-from signal import signal, SIGINT, SIGTERM, default_int_handler
+from signal import SIGINT, SIGTERM, default_int_handler, signal
+from typing import Any
 
-from ampel.core.AmpelContext import AmpelContext
-from ampel.enum.EventCode import EventCode
-from ampel.model.UnitModel import UnitModel
-from ampel.core.EventHandler import EventHandler
+from pymongo.errors import PyMongoError
+from typing_extensions import Self
+
 from ampel.abstract.AbsAlertSupplier import AbsAlertSupplier
 from ampel.abstract.AbsEventUnit import AbsEventUnit
-from ampel.base.AuxUnitRegister import AuxUnitRegister
-from ampel.alert.FilterBlocksHandler import FilterBlocksHandler
-from ampel.ingest.ChainedIngestionHandler import ChainedIngestionHandler
-from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
-from ampel.log import AmpelLogger, LogFlag, VERBOSE
-from ampel.log.utils import report_exception
-from ampel.log.AmpelLoggingError import AmpelLoggingError
-from ampel.log.LightLogRecord import LightLogRecord
 from ampel.alert.AlertConsumerError import AlertConsumerError
 from ampel.alert.AlertConsumerMetrics import AlertConsumerMetrics, stat_time
-from ampel.model.ingest.CompilerOptions import CompilerOptions
+from ampel.alert.FilterBlocksHandler import FilterBlocksHandler
+from ampel.base.AuxUnitRegister import AuxUnitRegister
+from ampel.core.AmpelContext import AmpelContext
+from ampel.core.EventHandler import EventHandler
+from ampel.enum.EventCode import EventCode
+from ampel.ingest.ChainedIngestionHandler import ChainedIngestionHandler
+from ampel.log import VERBOSE, AmpelLogger, LogFlag
+from ampel.log.AmpelLoggingError import AmpelLoggingError
+from ampel.log.LightLogRecord import LightLogRecord
+from ampel.log.utils import report_exception
 from ampel.model.AlertConsumerModel import AlertConsumerModel
-from ampel.util.mappings import get_by_path, merge_dict
+from ampel.model.ingest.CompilerOptions import CompilerOptions
+from ampel.model.UnitModel import UnitModel
+from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
 from ampel.util.freeze import recursive_unfreeze
+from ampel.util.mappings import get_by_path, merge_dict
 
 
 class AlertConsumer(AbsEventUnit, AlertConsumerModel):

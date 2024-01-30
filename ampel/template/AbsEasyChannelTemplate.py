@@ -7,16 +7,18 @@
 # Last Modified Date:  05.04.2023
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-import ujson
 from typing import Any
-from ampel.types import ChannelId
+
+import ujson
+
+from ampel.abstract.AbsChannelTemplate import AbsChannelTemplate
+from ampel.config.builder.FirstPassConfig import FirstPassConfig
 from ampel.log.AmpelLogger import AmpelLogger
 from ampel.model.ChannelModel import ChannelModel
-from ampel.model.ingest.T2Compute import T2Compute
 from ampel.model.ingest.FilterModel import FilterModel
-from ampel.config.builder.FirstPassConfig import FirstPassConfig
-from ampel.abstract.AbsChannelTemplate import AbsChannelTemplate
-from ampel.util.template import filter_units, resolve_shortcut, check_tied_units
+from ampel.model.ingest.T2Compute import T2Compute
+from ampel.types import ChannelId
+from ampel.util.template import check_tied_units, filter_units, resolve_shortcut
 
 
 class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):

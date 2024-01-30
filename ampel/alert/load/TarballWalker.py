@@ -9,6 +9,7 @@
 
 import tarfile
 
+
 class TarballWalker:
 	"""
 	"""

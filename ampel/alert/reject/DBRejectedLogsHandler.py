@@ -7,18 +7,19 @@
 # Last Modified Date:  09.05.2020
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from time import time
 from logging import DEBUG, WARNING, LogRecord
+from time import time
 from typing import Any
+
 from pymongo.errors import BulkWriteError
 from pymongo.operations import UpdateOne
 
-from ampel.types import ChannelId
-from ampel.log.AmpelLogger import AmpelLogger
-from ampel.log.LightLogRecord import LightLogRecord
-from ampel.log.AmpelLoggingError import AmpelLoggingError
-from ampel.log.LoggingErrorReporter import LoggingErrorReporter
 from ampel.core.ContextUnit import ContextUnit
+from ampel.log.AmpelLogger import AmpelLogger
+from ampel.log.AmpelLoggingError import AmpelLoggingError
+from ampel.log.LightLogRecord import LightLogRecord
+from ampel.log.LoggingErrorReporter import LoggingErrorReporter
+from ampel.types import ChannelId
 
 
 class DBRejectedLogsHandler(ContextUnit):

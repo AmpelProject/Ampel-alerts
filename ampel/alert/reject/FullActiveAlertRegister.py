@@ -7,12 +7,13 @@
 # Last Modified Date:  27.06.2022
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from time import time
-from struct import pack
-from typing import ClassVar
 from collections.abc import Sequence
-from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+from struct import pack
+from time import time
+from typing import ClassVar
+
 from ampel.alert.reject.FullAlertRegister import FullAlertRegister
+from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 
 class FullActiveAlertRegister(FullAlertRegister):

@@ -7,23 +7,26 @@
 # Last Modified Date:  24.11.2021
 # Last Modified By:    vb
 
-import pytest
-import os, signal, time, threading
+import os
+import signal
+import threading
+import time
 from contextlib import contextmanager
 
-from ampel.dev.DevAmpelContext import DevAmpelContext
-from ampel.model.ingest.IngestBody import IngestBody
-from ampel.model.ingest.IngestDirective import IngestDirective
-from ampel.model.ingest.T1Combine import T1Combine
-from ampel.model.ingest.T2Compute import T2Compute
+import pytest
 
 from ampel.alert.AlertConsumer import AlertConsumer
 from ampel.alert.AlertConsumerError import AlertConsumerError
 from ampel.alert.AmpelAlert import AmpelAlert
 from ampel.alert.filter.BasicMultiFilter import BasicMultiFilter
+from ampel.dev.DevAmpelContext import DevAmpelContext
 from ampel.dev.UnitTestAlertSupplier import UnitTestAlertSupplier
 from ampel.metrics.AmpelMetricsRegistry import AmpelMetricsRegistry
 from ampel.model.ingest.FilterModel import FilterModel
+from ampel.model.ingest.IngestBody import IngestBody
+from ampel.model.ingest.IngestDirective import IngestDirective
+from ampel.model.ingest.T1Combine import T1Combine
+from ampel.model.ingest.T2Compute import T2Compute
 
 
 @contextmanager

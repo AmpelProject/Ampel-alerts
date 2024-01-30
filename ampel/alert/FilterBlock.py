@@ -7,22 +7,28 @@
 # Last Modified Date:  27.06.2022
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
+from collections.abc import Callable
 from logging import LogRecord
 from typing import Any, cast
-from collections.abc import Callable
-from ampel.types import ChannelId, StockId
-from ampel.core.AmpelContext import AmpelContext
-from ampel.model.ingest.FilterModel import FilterModel
-from ampel.log.AmpelLogger import AmpelLogger, INFO
-from ampel.log.handlers.EnclosedChanRecordBufHandler import EnclosedChanRecordBufHandler
-from ampel.log.handlers.ChanRecordBufHandler import ChanRecordBufHandler
-from ampel.log.LightLogRecord import LightLogRecord
-from ampel.log.LogFlag import LogFlag
-from ampel.protocol.LoggingHandlerProtocol import LoggingHandlerProtocol
+
 from ampel.abstract.AbsAlertFilter import AbsAlertFilter
 from ampel.abstract.AbsAlertRegister import AbsAlertRegister
-from ampel.alert.AlertConsumerMetrics import stat_accepted, stat_rejected, stat_autocomplete, stat_time
+from ampel.alert.AlertConsumerMetrics import (
+	stat_accepted,
+	stat_autocomplete,
+	stat_rejected,
+	stat_time,
+)
+from ampel.core.AmpelContext import AmpelContext
+from ampel.log.AmpelLogger import INFO, AmpelLogger
+from ampel.log.handlers.ChanRecordBufHandler import ChanRecordBufHandler
+from ampel.log.handlers.EnclosedChanRecordBufHandler import EnclosedChanRecordBufHandler
+from ampel.log.LightLogRecord import LightLogRecord
+from ampel.log.LogFlag import LogFlag
+from ampel.model.ingest.FilterModel import FilterModel
 from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+from ampel.protocol.LoggingHandlerProtocol import LoggingHandlerProtocol
+from ampel.types import ChannelId, StockId
 
 
 def no_filter(alert: Any) -> bool:

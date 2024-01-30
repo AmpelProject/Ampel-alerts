@@ -9,10 +9,11 @@
 
 import tarfile
 from gzip import GzipFile
-from typing import IO, TypeAlias, TYPE_CHECKING
+from typing import IO, TYPE_CHECKING, TypeAlias
+
+from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 from ampel.log.AmpelLogger import AmpelLogger
 from ampel.types import Traceless
-from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 
 # use IOBase at runtime, because isinstance(anything, IO[bytes]) is always
 # False. 

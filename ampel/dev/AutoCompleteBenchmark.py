@@ -7,14 +7,16 @@
 # Last Modified Date:  29.04.2020
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from time import time
+from collections.abc import Callable, Sequence
 from functools import wraps
-from pymongo import MongoClient
 from multiprocessing import Pool, Semaphore, shared_memory
+from time import time
 from typing import Any
-from collections.abc import Sequence, Callable
-from ampel.types import ChannelId, StockId
+
+from pymongo import MongoClient
+
 from ampel.core.AmpelContext import AmpelContext
+from ampel.types import ChannelId, StockId
 
 
 def timeit(f):

@@ -7,7 +7,9 @@
 # Last Modified Date:  25.10.2021
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-import glob, os
+import glob
+import os
+
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 
 

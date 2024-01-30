@@ -8,12 +8,12 @@
 # Last Modified By:    Jakob van Santen <jakob.van.santen@desy.de>
 
 import operator
-from ampel.abstract.AbsAlertFilter import AbsAlertFilter
-from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
-
-from ampel.base.AmpelBaseModel import AmpelBaseModel
-from typing import Literal, ClassVar
 from collections.abc import Callable, Sequence
+from typing import ClassVar, Literal
+
+from ampel.abstract.AbsAlertFilter import AbsAlertFilter
+from ampel.base.AmpelBaseModel import AmpelBaseModel
+from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 
 class PhotoAlertQuery(AmpelBaseModel):

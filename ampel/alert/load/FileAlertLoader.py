@@ -8,7 +8,7 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 from io import BytesIO
-from typing import List
+
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 
 

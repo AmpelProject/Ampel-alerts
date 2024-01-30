@@ -8,10 +8,11 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 from typing import Iterator
+
 from ampel.abstract.AbsAlertSupplier import AbsAlertSupplier
-from ampel.model.UnitModel import UnitModel
-from ampel.log.AmpelLogger import AmpelLogger
 from ampel.base.AuxUnitRegister import AuxUnitRegister
+from ampel.log.AmpelLogger import AmpelLogger
+from ampel.model.UnitModel import UnitModel
 from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 
