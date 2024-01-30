@@ -34,6 +34,8 @@ from ampel.types import ChannelId, StockId
 def no_filter(alert: Any) -> bool:
 	return True
 
+# ruff: noqa: PLE0237
+
 class FilterBlock:
 	"""
 	Helper class for AlertConsumer.
@@ -208,12 +210,11 @@ class FilterBlock:
 							self.buffer.clear()
 
 					# Log minimal entry if channel did not log anything
-					else:
-						if self.rej_log_handle:
-							lrec = LightLogRecord(0, 0, None)
-							lrec.stock = alert.stock
-							lrec.extra = extra_ac
-							self.rej_log_handle(lrec)
+					elif self.rej_log_handle:
+						lrec = LightLogRecord(0, 0, None)
+						lrec.stock = alert.stock
+						lrec.extra = extra_ac
+						self.rej_log_handle(lrec)
 
 					if self.file:
 						self.file(alert, res)
