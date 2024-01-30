@@ -7,14 +7,16 @@
 # Last Modified Date:  29.04.2020
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from time import time
+from collections.abc import Callable, Sequence
 from functools import wraps
-from pymongo import MongoClient
 from multiprocessing import Pool, Semaphore, shared_memory
+from time import time
 from typing import Any
-from collections.abc import Sequence, Callable
-from ampel.types import ChannelId, StockId
+
+from pymongo import MongoClient
+
 from ampel.core.AmpelContext import AmpelContext
+from ampel.types import ChannelId, StockId
 
 
 def timeit(f):
@@ -176,7 +178,7 @@ class AutoCompleteBenchmark:
 					print(f'channel: {len(r)}')
 				print('')
 				print('')
-			except Exception as e:
+			except Exception as e:  # noqa: PERF203
 				print(e)
 				print(f'{name}(...) failed')
 				print('')
@@ -186,7 +188,7 @@ class AutoCompleteBenchmark:
 	@timeit
 	def get_ids_using_find(self, channel: ChannelId, *, verbose=True):
 		""" Warning: slow for large collections """
-		if isinstance(channel, (int, str)):
+		if isinstance(channel, int | str):
 			return {el['_id'] for el in self._stock_col.find({'channel': channel}, {'_id': 1})}
 		return {k: self.get_ids_using_find(k, verbose=verbose) for k in channel}
 
@@ -194,7 +196,7 @@ class AutoCompleteBenchmark:
 	@timeit
 	def get_ids_using_parallel_find(self, channel: ChannelId, *, batch_size=1000000, verbose=True):
 		""" Winner method """
-		if isinstance(channel, (int, str)):
+		if isinstance(channel, int | str):
 			return {el['_id'] for el in self._stock_col.find({'channel': channel}, {'_id': 1}).batch_size(batch_size)}
 
 		pool = Pool(4)
@@ -220,7 +222,7 @@ class AutoCompleteBenchmark:
 	@timeit
 	def get_ids_using_distinct(self, channel: ChannelId, *, verbose: bool = True):
 		""" Warning: fails for large collections """
-		if isinstance(channel, (int, str)):
+		if isinstance(channel, int | str):
 			return set(self._stock_col.distinct('_id', filter={'channel': channel}))
 		return {k: self.get_ids_using_distinct(k, verbose=verbose) for k in channel}
 
@@ -228,7 +230,7 @@ class AutoCompleteBenchmark:
 	@timeit
 	def get_ids_using_aggregate(self, channel: ChannelId, *, verbose: bool = True):
 		""" Warning: fails for large collections """
-		if isinstance(channel, (int, str)):
+		if isinstance(channel, int | str):
 			return next(
 				self._stock_col.aggregate(
 					[
@@ -250,7 +252,7 @@ class AutoCompleteBenchmark:
 		and result in noticible performance drawbacks.
 		All in all, parallel "parallel find(...)" works all the time better in all circumstances.
 		"""
-		if isinstance(channel, (int, str)):
+		if isinstance(channel, int | str):
 
 			s = set()
 			skip = 0
@@ -284,7 +286,7 @@ class AutoCompleteBenchmark:
 		Firing one request per channel and grouping the result in python yield much better performance.
 		"""
 
-		if isinstance(channel, (int, str)):
+		if isinstance(channel, int | str):
 			return self.get_ids_using_paged_aggregate(channel)
 
 		skip = 0
@@ -345,7 +347,7 @@ class AutoCompleteBenchmark:
 		start = time()
 		skip = 0
 		pool = Pool(4)
-		self.sem = Semaphore(pool._processes) # type: ignore
+		self.sem = Semaphore(pool._processes) # type: ignore  # noqa: SLF001
 		self.keys = list(channels)
 		results = []
 

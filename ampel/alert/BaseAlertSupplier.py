@@ -8,16 +8,17 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 import json
+from collections.abc import Callable, Iterator
 from io import IOBase
 from typing import Any, Literal
-from collections.abc import Callable, Iterator
-from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
-from ampel.abstract.AbsAlertSupplier import AbsAlertSupplier
-from ampel.log.AmpelLogger import AmpelLogger
-from ampel.base.decorator import abstractmethod
-from ampel.base.AuxUnitRegister import AuxUnitRegister
+
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
+from ampel.abstract.AbsAlertSupplier import AbsAlertSupplier
+from ampel.base.AuxUnitRegister import AuxUnitRegister
+from ampel.base.decorator import abstractmethod
+from ampel.log.AmpelLogger import AmpelLogger
 from ampel.model.UnitModel import UnitModel
+from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 from ampel.struct.Resource import Resource
 
 
@@ -73,7 +74,7 @@ class BaseAlertSupplier(AbsAlertSupplier, abstract=True):
 		elif self.deserialize == "avro":
 
 			from fastavro import reader
-			def avro_next(arg: IOBase): # noqa: E306
+			def avro_next(arg: IOBase):
 				return next(reader(arg))
 
 			self._deserialize = avro_next

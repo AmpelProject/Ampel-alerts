@@ -10,6 +10,7 @@
 import signal
 from enum import IntEnum
 
+
 class AlertConsumerError(IntEnum):
 	CONNECTIVITY = 1
 	SIGINT = signal.SIGINT # 2

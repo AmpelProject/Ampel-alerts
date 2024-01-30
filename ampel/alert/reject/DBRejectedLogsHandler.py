@@ -7,18 +7,19 @@
 # Last Modified Date:  09.05.2020
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from time import time
 from logging import DEBUG, WARNING, LogRecord
+from time import time
 from typing import Any
+
 from pymongo.errors import BulkWriteError
 from pymongo.operations import UpdateOne
 
-from ampel.types import ChannelId
-from ampel.log.AmpelLogger import AmpelLogger
-from ampel.log.LightLogRecord import LightLogRecord
-from ampel.log.AmpelLoggingError import AmpelLoggingError
-from ampel.log.LoggingErrorReporter import LoggingErrorReporter
 from ampel.core.ContextUnit import ContextUnit
+from ampel.log.AmpelLogger import AmpelLogger
+from ampel.log.AmpelLoggingError import AmpelLoggingError
+from ampel.log.LightLogRecord import LightLogRecord
+from ampel.log.LoggingErrorReporter import LoggingErrorReporter
+from ampel.types import ChannelId
 
 
 class DBRejectedLogsHandler(ContextUnit):
@@ -97,10 +98,7 @@ class DBRejectedLogsHandler(ContextUnit):
 
 				# If duplication exists between keys in extra and in standard rec,
 				# the corresponding extra items will be overwritten (and thus ignored)
-				if 'extra' in rd:
-					d = {k: rd['extra'][k] for k in rd['extra']}
-				else:
-					d = {}
+				d = {k: rd["extra"][k] for k in rd["extra"]} if "extra" in rd else {}
 
 				# 'alert' and 'stock' must exist in the log record,
 				# otherwise, the AP made a mistake

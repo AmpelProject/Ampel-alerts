@@ -8,11 +8,12 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 from collections.abc import Sequence
-from ampel.model.UnitModel import UnitModel
-from ampel.model.ingest.IngestDirective import IngestDirective
-from ampel.model.ingest.DualIngestDirective import DualIngestDirective
-from ampel.model.ingest.CompilerOptions import CompilerOptions
+
 from ampel.base.AmpelBaseModel import AmpelBaseModel
+from ampel.model.ingest.CompilerOptions import CompilerOptions
+from ampel.model.ingest.DualIngestDirective import DualIngestDirective
+from ampel.model.ingest.IngestDirective import IngestDirective
+from ampel.model.UnitModel import UnitModel
 
 
 class AlertConsumerModel(AmpelBaseModel):

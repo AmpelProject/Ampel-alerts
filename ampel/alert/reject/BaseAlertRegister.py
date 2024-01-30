@@ -7,12 +7,13 @@
 # Last Modified Date:  31.08.2020
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from typing import BinaryIO, Literal, Any, ClassVar
-from collections.abc import Sequence, Generator
-from ampel.types import ChannelId
+from collections.abc import Generator, Sequence
+from typing import Any, BinaryIO, ClassVar, Literal
+
 from ampel.abstract.AbsAlertRegister import AbsAlertRegister
-from ampel.util.register import find, reg_iter
 from ampel.log import VERBOSE
+from ampel.types import ChannelId
+from ampel.util.register import find, reg_iter
 
 
 class BaseAlertRegister(AbsAlertRegister, abstract=True):
@@ -125,9 +126,12 @@ class BaseAlertRegister(AbsAlertRegister, abstract=True):
 		if not self.file_cap:
 			return False
 
-		if 'runs' in self.file_cap: # type: ignore[operator]
-			if isinstance(header['run'], list) and len(header['run']) > self.file_cap['runs']:
-				return True
+		if (
+			'runs' in self.file_cap and # type: ignore[operator]
+			isinstance(header['run'], list) and
+			len(header['run']) > self.file_cap['runs']
+		):
+			return True
 
 		return super().check_rename(header)
 

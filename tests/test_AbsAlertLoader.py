@@ -1,14 +1,15 @@
-import pytest
 import tarfile
 import uuid
 from io import BytesIO
 from pathlib import Path
 
+import pytest
+
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 from ampel.alert.load.DirAlertLoader import DirAlertLoader
+from ampel.alert.load.DirFileNamesLoader import DirFileNamesLoader
 from ampel.alert.load.FileAlertLoader import FileAlertLoader
 from ampel.alert.load.TarAlertLoader import TarAlertLoader
-from ampel.alert.load.DirFileNamesLoader import DirFileNamesLoader
 
 
 def test_dummy():
@@ -56,11 +57,11 @@ def test_FileAlertLoader(dummy_alert: tuple[Path, bytes]):
     for item in loader:
         assert item.read() == content
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Parameter 'files' cannot be empty"):
         FileAlertLoader(files=[])
 
 
-@pytest.mark.parametrize("klass", (DirAlertLoader, DirFileNamesLoader))
+@pytest.mark.parametrize("klass", [DirAlertLoader, DirFileNamesLoader])
 def test_DirAlertLoader(klass, dummy_alert: tuple[Path, bytes]):
     path, content = dummy_alert
     loader = klass(

@@ -8,11 +8,12 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 from collections.abc import Sequence
+
 from ampel.alert.FilterBlock import FilterBlock
 from ampel.core.AmpelContext import AmpelContext
 from ampel.log.AmpelLogger import AmpelLogger
-from ampel.model.ingest.IngestDirective import IngestDirective
 from ampel.model.ingest.DualIngestDirective import DualIngestDirective
+from ampel.model.ingest.IngestDirective import IngestDirective
 
 
 class FilterBlocksHandler:
@@ -105,13 +106,13 @@ class FilterBlocksHandler:
 		# Note: channel names can be integers
 		self.chan_names = [
 			f"{fb.channel}" for fb in self.filter_blocks
-			if fb.channel in context.config._config['channel']
+			if fb.channel in context.config._config['channel']  # noqa: SLF001
 		]
 
 		# Check that channels defined in directives exist in ampel config
 		if len(self.chan_names) != len(self.filter_blocks):
 			for fb in self.filter_blocks:
-				if fb.channel not in context.config._config['channel']:
+				if fb.channel not in context.config._config['channel']:  # noqa: SLF001
 					raise ValueError(f"Channel {fb.channel} unknown in ampel config")
 
 		if len(self.filter_blocks) == 1 and db_log_format == "compact":

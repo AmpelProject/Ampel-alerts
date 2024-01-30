@@ -7,11 +7,12 @@
 # Last Modified Date:  27.06.2022
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
+from collections.abc import Sequence
 from struct import pack
 from typing import ClassVar
-from collections.abc import Sequence
-from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+
 from ampel.alert.reject.MinimalAlertRegister import MinimalAlertRegister
+from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 
 class MinimalActiveAlertRegister(MinimalAlertRegister):

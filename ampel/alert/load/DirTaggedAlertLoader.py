@@ -7,8 +7,9 @@
 # Last Modified Date:  04.10.2021
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from os.path import basename
 from io import BytesIO, StringIO
+from os.path import basename
+
 from ampel.alert.load.DirAlertLoader import DirAlertLoader
 
 

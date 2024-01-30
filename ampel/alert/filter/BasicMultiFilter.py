@@ -8,13 +8,14 @@
 # Last Modified By:    Jakob van Santen <jakob.van.santen@desy.de>
 
 import operator
+from collections.abc import Callable, Sequence
+from typing import ClassVar, Literal
+
 from ampel.abstract.AbsAlertFilter import AbsAlertFilter
+from ampel.base.AmpelBaseModel import AmpelBaseModel
 from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
-from ampel.base.AmpelBaseModel import AmpelBaseModel
-from typing import Literal, ClassVar
-from collections.abc import Callable, Sequence
-
+# ruff: noqa: SLF001
 
 class PhotoAlertQuery(AmpelBaseModel):
 	"""
@@ -107,22 +108,18 @@ class BasicMultiFilter(AbsAlertFilter):
 		    ]
 		"""
 
-		filter_res = []
-
-		for param in self.filters:
-
-			filter_res.append(
-				param._operator(
-					len(
-						alert.get_values('candid', filters = param._criteria)
-					),
-					param.len
-				)
-			)
+		filter_res = [
+			param._operator(
+				len(
+					alert.get_values('candid', filters = param._criteria)
+				),
+				param.len
+			) for param in self.filters
+		]
 
 		current_res = False
 
-		for i, param in enumerate(filter_res):
+		for i, _ in enumerate(filter_res):
 
 			if i == 0:
 				current_res = filter_res[i]

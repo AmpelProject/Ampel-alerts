@@ -1,26 +1,26 @@
+import sys
 from contextlib import contextmanager
 from pathlib import Path
-import sys
 from typing import TYPE_CHECKING
-from ampel.alert.AlertConsumer import AlertConsumer
 
 import pytest
-
-from ampel.dev.DevAmpelContext import DevAmpelContext
-from ampel.log.AmpelLogger import AmpelLogger
-from ampel.template.EasyAlertConsumerTemplate import EasyAlertConsumerTemplate
-from ampel.alert.AmpelAlert import AmpelAlert
-from ampel.model.UnitModel import UnitModel
-
-from ampel.cli.main import main
 from pytest_mock import MockerFixture
 
+from ampel.alert.AlertConsumer import AlertConsumer
+from ampel.alert.AmpelAlert import AmpelAlert
+from ampel.cli.main import main
+from ampel.dev.DevAmpelContext import DevAmpelContext
+from ampel.log.AmpelLogger import AmpelLogger
+from ampel.model.UnitModel import UnitModel
+from ampel.template.EasyAlertConsumerTemplate import EasyAlertConsumerTemplate
+
 if TYPE_CHECKING:
-    from ampel.config.builder.FirstPassConfig import FirstPassConfig
+    pass
 
 
-@pytest.mark.parametrize(["muxer"], [(None,), ("DummyMuxer",)])
-def test_instantiation(dev_context: DevAmpelContext, muxer, dummy_units):
+@pytest.mark.parametrize("muxer", [None, "DummyMuxer"])
+@pytest.mark.usefixtures("_dummy_units")
+def test_instantiation(dev_context: DevAmpelContext, muxer):
     tpl = EasyAlertConsumerTemplate(
         **{
             "channel": "TEST_CHANNEL",
@@ -93,8 +93,9 @@ def run(args: list[str]) -> None | int | str:
         return se.code
 
 
+@pytest.mark.usefixtures("_dummy_units")
 def test_job_file(
-    testing_config, dev_context: DevAmpelContext, dummy_units, mocker: MockerFixture
+    testing_config, dev_context: DevAmpelContext, mocker: MockerFixture
 ):
     mock = mocker.patch.object(
         AlertConsumer, "proceed", side_effect=AlertConsumer.proceed, autospec=True

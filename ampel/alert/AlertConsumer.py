@@ -8,33 +8,38 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 import sys
-from typing import Any
-from typing_extensions import Self
 from collections.abc import Sequence
-from pymongo.errors import PyMongoError
-from signal import signal, SIGINT, SIGTERM, default_int_handler
+from contextlib import suppress
+from signal import SIGINT, SIGTERM, default_int_handler, signal
+from typing import TYPE_CHECKING, Any
 
-from ampel.core.AmpelContext import AmpelContext
-from ampel.enum.EventCode import EventCode
-from ampel.model.UnitModel import UnitModel
-from ampel.core.EventHandler import EventHandler
+from pymongo.errors import PyMongoError
+from typing_extensions import Self
+
 from ampel.abstract.AbsAlertSupplier import AbsAlertSupplier
 from ampel.abstract.AbsEventUnit import AbsEventUnit
-from ampel.base.AuxUnitRegister import AuxUnitRegister
-from ampel.alert.FilterBlocksHandler import FilterBlocksHandler
-from ampel.ingest.ChainedIngestionHandler import ChainedIngestionHandler
-from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
-from ampel.log import AmpelLogger, LogFlag, VERBOSE
-from ampel.log.utils import report_exception
-from ampel.log.AmpelLoggingError import AmpelLoggingError
-from ampel.log.LightLogRecord import LightLogRecord
 from ampel.alert.AlertConsumerError import AlertConsumerError
 from ampel.alert.AlertConsumerMetrics import AlertConsumerMetrics, stat_time
-from ampel.model.ingest.CompilerOptions import CompilerOptions
+from ampel.alert.FilterBlocksHandler import FilterBlocksHandler
+from ampel.base.AuxUnitRegister import AuxUnitRegister
+from ampel.core.AmpelContext import AmpelContext
+from ampel.core.EventHandler import EventHandler
+from ampel.enum.EventCode import EventCode
+from ampel.ingest.ChainedIngestionHandler import ChainedIngestionHandler
+from ampel.log import VERBOSE, AmpelLogger, LogFlag
+from ampel.log.AmpelLoggingError import AmpelLoggingError
+from ampel.log.LightLogRecord import LightLogRecord
+from ampel.log.utils import report_exception
 from ampel.model.AlertConsumerModel import AlertConsumerModel
-from ampel.util.mappings import get_by_path, merge_dict
+from ampel.model.ingest.CompilerOptions import CompilerOptions
+from ampel.model.UnitModel import UnitModel
+from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
 from ampel.util.freeze import recursive_unfreeze
+from ampel.util.mappings import get_by_path, merge_dict
 
+if TYPE_CHECKING:
+	from ampel.alert.FilterBlock import FilterBlock
+	from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 	"""
@@ -257,17 +262,19 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		self._fbh.ready(logger, run_id)
 
 		# Shortcuts
-		report_filter_error = lambda e, alert, fblock: self._report_ap_error(
-			e, event_hdlr, logger,
-			extra = {'a': alert.id, 'section': 'filter', 'c': fblock.channel}
-		)
+		def report_filter_error(e: Exception, alert: "AmpelAlertProtocol", fblock: "FilterBlock"):
+			self._report_ap_error(
+				e, event_hdlr, logger,
+				extra = {'a': alert.id, 'section': 'filter', 'c': fblock.channel}
+			)
 
-		report_ingest_error = lambda e, alert, filter_results: self._report_ap_error(
-			e, event_hdlr, logger, extra={
-				'a': alert.id, 'section': 'ingest',
-				'c': [self.directives[el[0]].channel for el in filter_results]
-			}
-		)
+		def report_ingest_error(e: Exception, alert: "AmpelAlertProtocol", filter_results: Sequence[tuple[int, bool|int]]):
+			self._report_ap_error(
+				e, event_hdlr, logger, extra={
+					'a': alert.id, 'section': 'ingest',
+					'c': [self.directives[el[0]].channel for el in filter_results]
+				}
+			)
 
 		# Process alerts
 		################
@@ -305,7 +312,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 								filter_results.append(res) # type: ignore[arg-type]
 
 						# Unrecoverable (logging related) errors
-						except (PyMongoError, AmpelLoggingError) as e:
+						except (PyMongoError, AmpelLoggingError) as e:  # noqa: PERF203
 							print("%s: abording run() procedure" % e.__class__.__name__)
 							report_filter_error(e, alert, fblock)
 							raise e
@@ -320,12 +327,11 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 							if self.raise_exc:
 								raise e
-							else:
-								if self.error_max:
-									err += 1
-								if err == self.error_max:
-									logger.error("Max number of error reached, breaking alert processing")
-									self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
+							if self.error_max:
+								err += 1
+							if err == self.error_max:
+								logger.error("Max number of error reached, breaking alert processing")
+								self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
 				else:
 					# if bypassing filters, track passing rates at top level
 					for counter in stats.filter_accepted:
@@ -463,8 +469,8 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		}
 
 		if extra:
-			for k in extra.keys():
-				info[k] = extra[k]
+			for k, v in extra.items():
+				info[k] = v
 
 		# Try to insert doc into trouble collection (raises no exception)
 		# Possible exception will be logged out to console in any case
@@ -474,10 +480,8 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 	@staticmethod
 	def print_feedback(arg: Any, suffix: str = "") -> None:
 		print("") # ^C in console
-		try:
+		with suppress(Exception):
 			arg = AlertConsumerError(arg)
-		except Exception:
-			pass
 		s = f"[{arg.name if isinstance(arg, AlertConsumerError) else arg}] Interrupting run {suffix}"
 		print("+" * len(s))
 		print(s)

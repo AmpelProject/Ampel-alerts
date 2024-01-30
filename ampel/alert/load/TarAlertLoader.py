@@ -9,10 +9,11 @@
 
 import tarfile
 from gzip import GzipFile
-from typing import IO, TypeAlias, TYPE_CHECKING
+from typing import IO, TYPE_CHECKING, TypeAlias
+
+from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 from ampel.log.AmpelLogger import AmpelLogger
 from ampel.types import Traceless
-from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 
 # use IOBase at runtime, because isinstance(anything, IO[bytes]) is always
 # False. 
@@ -107,9 +108,8 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 				self._chained_tal = TarAlertLoader(file_obj=file_obj)
 				if (subfile_obj := self.get_chained_next()) is not None:
 					return subfile_obj
-				else:
-					return next(self)
-			elif tar_info.name.endswith('.gz'):
+				return next(self)
+			if tar_info.name.endswith('.gz'):
 				return GzipFile(mode="rb", fileobj=file_obj) # type: ignore[return-value]
 			return file_obj
 

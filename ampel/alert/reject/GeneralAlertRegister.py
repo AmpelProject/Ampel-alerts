@@ -8,9 +8,10 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 from struct import pack
-from typing import Literal, BinaryIO, ClassVar
-from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+from typing import BinaryIO, ClassVar, Literal
+
 from ampel.alert.reject.BaseAlertRegister import BaseAlertRegister
+from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 
 class GeneralAlertRegister(BaseAlertRegister):

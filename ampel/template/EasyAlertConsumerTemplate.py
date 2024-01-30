@@ -71,8 +71,7 @@ class EasyAlertConsumerTemplate(AbsConfigMorpher):
     def _config_as_dict(arg: None | str | UnitModel) -> None | dict[str, Any]:
         if arg is None:
             return None
-        else:
-            return (arg if isinstance(arg, UnitModel) else UnitModel(unit=arg)).dict(exclude_unset=True)
+        return (arg if isinstance(arg, UnitModel) else UnitModel(unit=arg)).dict(exclude_unset=True)
 
     def _get_supplier(self) -> dict[str, Any]:
 

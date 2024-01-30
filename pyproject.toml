@@ -80,3 +80,37 @@ module = [
     "fastavro",
 ]
 ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "I",
+    "UP",
+    "B",
+    "DTZ",
+    "T20",
+    "PT",
+    "RET",
+    "SLF",
+    "SIM",
+    "PL",
+    "PERF",
+    "RUF",
+]
+ignore = [
+    "UP009", # UTF-8 encoding declaration is unnecessary
+    "PLR09", # too many (arguments|branches)
+    "PLR2004", # Magic value used in comparison
+    "RUF012", # mutable class properties (are harmless everywhere BaseModel is used)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["T20", "E731", "SLF001", "PLR2004"]
+"ampel/dev/AutoCompleteBenchmark.py" = ["T201"]
+"ampel/alert/AlertConsumer.py" = ["T201"]

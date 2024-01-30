@@ -7,12 +7,14 @@
 # Last Modified Date:  26.05.2020
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from time import time
+from collections.abc import Generator
 from struct import pack
-from typing import Literal, BinaryIO, ClassVar, Generator
-from ampel.util.register import reg_iter
-from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+from time import time
+from typing import BinaryIO, ClassVar, Literal
+
 from ampel.alert.reject.BaseAlertRegister import BaseAlertRegister
+from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+from ampel.util.register import reg_iter
 
 
 class FullAlertRegister(BaseAlertRegister):

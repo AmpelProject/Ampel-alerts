@@ -9,6 +9,7 @@
 
 import logging
 
+
 # pylint: disable=logging-format-interpolation
 class AlertFileList:
 
@@ -40,7 +41,7 @@ class AlertFileList:
 		self.min_index = min_index
 		self.max_index = max_index
 		self.logger.debug(f"Min index set to: {self.min_index}")
-		self.logger.debug(f"Max index set to: {str(self.max_index)}")
+		self.logger.debug(f"Max index set to: {self.max_index:s}")
 
 
 	def set_max_entries(self, max_entries):
@@ -59,24 +60,23 @@ class AlertFileList:
 		""" """
 		self.logger.debug("Building internal file list")
 
-		import glob, os
+		import glob
+		import os
 		all_files = sorted(glob.glob(self.folder + "/" + self.extension), key=os.path.getmtime)
 
 		if self.min_index is not None:
 			self.logger.debug("Filtering files using min_index criterium")
-			out_files = []
-			for f in all_files:
-				if int(os.path.basename(f).split(".")[0]) >= self.min_index:
-					out_files.append(f)
-			all_files = out_files
+			all_files = [
+				f for f in all_files
+				if int(os.path.basename(f).split(".")[0]) >= self.min_index
+			]
 
 		if self.max_index is not None:
 			self.logger.debug("Filtering files using max_index criterium")
-			out_files = []
-			for f in all_files:
-				if int(os.path.basename(f).split(".")[0]) <= self.max_index:
-					out_files.append(f)
-			all_files = out_files
+			all_files = [
+				f for f in all_files
+				if int(os.path.basename(f).split(".")[0]) <= self.max_index
+			]
 
 		if self.max_entries is not None:
 			self.logger.debug("Filtering files using max_entries criterium")

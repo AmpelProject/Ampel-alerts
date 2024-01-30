@@ -8,6 +8,7 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 from io import BytesIO, StringIO
+
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 
 
@@ -58,7 +59,8 @@ class DirAlertLoader(AbsAlertLoader[StringIO | BytesIO]):
 
 		self.logger.debug("Building internal file list")
 
-		import glob, os
+		import glob
+		import os
 		all_files = sorted(
 			glob.glob(
 				os.path.join(self.folder, "*." + self.extension)
@@ -68,19 +70,17 @@ class DirAlertLoader(AbsAlertLoader[StringIO | BytesIO]):
 
 		if self.min_index is not None:
 			self.logger.debug("Filtering files using min_index criterium")
-			out_files = []
-			for f in all_files:
-				if int(os.path.basename(f).split(".")[0]) >= self.min_index:
-					out_files.append(f)
-			all_files = out_files
+			all_files = [
+				f for f in all_files
+				if int(os.path.basename(f).split(".")[0]) >= self.min_index
+			]
 
 		if self.max_index is not None:
 			self.logger.debug("Filtering files using max_index criterium")
-			out_files = []
-			for f in all_files:
-				if int(os.path.basename(f).split(".")[0]) <= self.max_index:
-					out_files.append(f)
-			all_files = out_files
+			all_files = [
+				f for f in all_files
+				if int(os.path.basename(f).split(".")[0]) <= self.max_index
+			]
 
 		if self.max_entries is not None:
 			self.logger.debug("Filtering files using max_entries criterium")
