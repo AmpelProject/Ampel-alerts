@@ -106,13 +106,13 @@ class FilterBlocksHandler:
 		# Note: channel names can be integers
 		self.chan_names = [
 			f"{fb.channel}" for fb in self.filter_blocks
-			if fb.channel in context.config._config['channel']
+			if fb.channel in context.config._config['channel']  # noqa: SLF001
 		]
 
 		# Check that channels defined in directives exist in ampel config
 		if len(self.chan_names) != len(self.filter_blocks):
 			for fb in self.filter_blocks:
-				if fb.channel not in context.config._config['channel']:
+				if fb.channel not in context.config._config['channel']:  # noqa: SLF001
 					raise ValueError(f"Channel {fb.channel} unknown in ampel config")
 
 		if len(self.filter_blocks) == 1 and db_log_format == "compact":

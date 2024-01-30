@@ -347,7 +347,7 @@ class AutoCompleteBenchmark:
 		start = time()
 		skip = 0
 		pool = Pool(4)
-		self.sem = Semaphore(pool._processes) # type: ignore
+		self.sem = Semaphore(pool._processes) # type: ignore  # noqa: SLF001
 		self.keys = list(channels)
 		results = []
 

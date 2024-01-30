@@ -15,6 +15,7 @@ from ampel.abstract.AbsAlertFilter import AbsAlertFilter
 from ampel.base.AmpelBaseModel import AmpelBaseModel
 from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
+# ruff: noqa: SLF001
 
 class PhotoAlertQuery(AmpelBaseModel):
 	"""
