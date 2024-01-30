@@ -9,6 +9,7 @@
 
 import sys
 from collections.abc import Sequence
+from contextlib import suppress
 from signal import SIGINT, SIGTERM, default_int_handler, signal
 from typing import TYPE_CHECKING, Any
 
@@ -468,8 +469,8 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		}
 
 		if extra:
-			for k in extra.keys():
-				info[k] = extra[k]
+			for k, v in extra.items():
+				info[k] = v
 
 		# Try to insert doc into trouble collection (raises no exception)
 		# Possible exception will be logged out to console in any case
@@ -479,10 +480,8 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 	@staticmethod
 	def print_feedback(arg: Any, suffix: str = "") -> None:
 		print("") # ^C in console
-		try:
+		with suppress(Exception):
 			arg = AlertConsumerError(arg)
-		except Exception:
-			pass
 		s = f"[{arg.name if isinstance(arg, AlertConsumerError) else arg}] Interrupting run {suffix}"
 		print("+" * len(s))
 		print(s)

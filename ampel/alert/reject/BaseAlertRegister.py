@@ -126,9 +126,12 @@ class BaseAlertRegister(AbsAlertRegister, abstract=True):
 		if not self.file_cap:
 			return False
 
-		if 'runs' in self.file_cap: # type: ignore[operator]
-			if isinstance(header['run'], list) and len(header['run']) > self.file_cap['runs']:
-				return True
+		if (
+			'runs' in self.file_cap and # type: ignore[operator]
+			isinstance(header['run'], list) and
+			len(header['run']) > self.file_cap['runs']
+		):
+			return True
 
 		return super().check_rename(header)
 

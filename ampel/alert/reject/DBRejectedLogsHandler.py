@@ -98,10 +98,7 @@ class DBRejectedLogsHandler(ContextUnit):
 
 				# If duplication exists between keys in extra and in standard rec,
 				# the corresponding extra items will be overwritten (and thus ignored)
-				if 'extra' in rd:
-					d = {k: rd['extra'][k] for k in rd['extra']}
-				else:
-					d = {}
+				d = {k: rd["extra"][k] for k in rd["extra"]} if "extra" in rd else {}
 
 				# 'alert' and 'stock' must exist in the log record,
 				# otherwise, the AP made a mistake

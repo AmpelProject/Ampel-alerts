@@ -24,19 +24,17 @@ class TarballWalker:
 
 	def get_files(self):
 
-		tar_file = open(self.tarpath, 'rb')
-		count = -1
+		with open(self.tarpath, 'rb') as tar_file:
+			count = -1
 
-		for fileobj in self._walk(tar_file):
+			for fileobj in self._walk(tar_file):
 
-			count += 1
-			if count < self.start:
-				continue
-			if self.stop is not None and count > self.stop:
-				break
-			yield fileobj
-
-		tar_file.close()
+				count += 1
+				if count < self.start:
+					continue
+				if self.stop is not None and count > self.stop:
+					break
+				yield fileobj
 
 
 	def _walk(self, fileobj):
