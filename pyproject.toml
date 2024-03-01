@@ -30,7 +30,7 @@ python = "^3.10"
 ampel-core = {version = ">=0.10.0a0,<0.11"}
 
 [tool.poetry.dev-dependencies]
-pytest = "^8.0.0"
+pytest = "^8.0.2"
 pytest-cov = "^4.1.0"
 pytest-mock = "^3.12.0"
 mongomock = "^4.1.2"
@@ -107,7 +107,8 @@ ignore = [
     "UP009", # UTF-8 encoding declaration is unnecessary
     "PLR09", # too many (arguments|branches)
     "PLR2004", # Magic value used in comparison
-    "RUF012", # mutable class properties (are harmless everywhere BaseModel is used)
+    "RUF012", # mutable class properties (are harmless everywhere BaseModel is used),
+    "RUF018", # assignment expressions in asserts are fine
 ]
 
 [tool.ruff.lint.per-file-ignores]
