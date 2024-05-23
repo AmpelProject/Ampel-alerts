@@ -313,7 +313,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 						# Unrecoverable (logging related) errors
 						except (PyMongoError, AmpelLoggingError) as e:  # noqa: PERF203
-							print("%s: abording run() procedure" % e.__class__.__name__)
+							print(f"{e.__class__.__name__}: abording run() procedure")
 							report_filter_error(e, alert, fblock)
 							raise e
 
@@ -354,7 +354,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 									alert_extra, alert.extra.get('stock') if alert.extra else None
 								)
 						except (PyMongoError, AmpelLoggingError) as e:
-							print("%s: abording run() procedure" % e.__class__.__name__)
+							print(f"{e.__class__.__name__}: abording run() procedure")
 							report_ingest_error(e, alert, filter_results)
 							raise e
 

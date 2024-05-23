@@ -44,7 +44,7 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 
 		super().__init__(**kwargs)
 
-		self._chained_tal: 'None | TarAlertLoader' = None
+		self._chained_tal: None | TarAlertLoader = None
 
 		if self.file_obj:
 			self._tar_file = tarfile.open(fileobj=self.file_obj, mode=self.tar_mode)
@@ -90,7 +90,7 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 		# Reach end of archive
 		if tar_info is None:
 			if hasattr(self, "file_path"):
-				self.logger.info("Reached end of tar file %s" % self.file_path)
+				self.logger.info(f"Reached end of tar file {self.file_path}")
 				#self.tar_file.close()
 			else:
 				self.logger.info("Reached end of tar")
