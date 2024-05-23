@@ -90,7 +90,7 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 		# Reach end of archive
 		if tar_info is None:
 			if hasattr(self, "file_path"):
-				self.logger.info("Reached end of tar file %s" % self.file_path)
+				self.logger.info(f"Reached end of tar file {self.file_path}")
 				#self.tar_file.close()
 			else:
 				self.logger.info("Reached end of tar")
