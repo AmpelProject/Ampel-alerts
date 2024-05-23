@@ -44,7 +44,7 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 
 		super().__init__(**kwargs)
 
-		self._chained_tal: 'None | TarAlertLoader' = None
+		self._chained_tal: None | TarAlertLoader = None
 
 		if self.file_obj:
 			self._tar_file = tarfile.open(fileobj=self.file_obj, mode=self.tar_mode)
