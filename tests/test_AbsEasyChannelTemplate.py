@@ -57,12 +57,12 @@ class LegacyChannelTemplate(AbsEasyChannelTemplate):
             ValueError,
         ),
         # statebound T2 with implicit (default) statebound dependency
+        # default dependencies aren't automatically resolved
         pytest.param(
             [{"unit": "DummyTiedStateT2Unit"}],
             ["ingest", "combine", 0, "state_t2"],
             {"unit": "DummyStateT2Unit"},
-            None,
-            marks=pytest.mark.xfail(reason="default dependencies aren't automatically resolved")
+            ValueError,
         ),
         # statebound T2 with statebound dependency, also explicitly configured
         (
