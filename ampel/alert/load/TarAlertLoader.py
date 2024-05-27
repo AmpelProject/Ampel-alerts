@@ -12,8 +12,6 @@ from gzip import GzipFile
 from typing import IO, TYPE_CHECKING, TypeAlias
 
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
-from ampel.log.AmpelLogger import AmpelLogger
-from ampel.types import Traceless
 
 # use IOBase at runtime, because isinstance(anything, IO[bytes]) is always
 # False. 
@@ -34,13 +32,8 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 	start: int = 0
 	file_obj: None | IOBase
 	file_path: None | str
-	logger: Traceless[AmpelLogger] # actually optional
-
 
 	def __init__(self, **kwargs) -> None:
-
-		if kwargs.get('logger') is None:
-			kwargs['logger'] = AmpelLogger.get_logger()
 
 		super().__init__(**kwargs)
 
