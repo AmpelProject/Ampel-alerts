@@ -47,7 +47,7 @@ def collect_diff(store):
     store.update(delta)
 
 
-@pytest.fixture()
+@pytest.fixture
 def single_source_directive(
     dev_context: DevAmpelContext, _dummy_units
 ) -> IngestDirective:
