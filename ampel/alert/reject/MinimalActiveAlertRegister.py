@@ -30,8 +30,6 @@ class MinimalActiveAlertRegister(MinimalAlertRegister):
 	# Override
 	def file(self, alert: AmpelAlertProtocol, filter_res: int = 0) -> None:
 		alid = alert.id
-		if alid > self.alert_max:
-			self.alert_max = alid
-		if alid < self.alert_min:
-			self.alert_min = alid
+		self.alert_max = max(alid, self.alert_max)
+		self.alert_min = min(alid, self.alert_min)
 		self._write(pack('<QB', alid, -filter_res))

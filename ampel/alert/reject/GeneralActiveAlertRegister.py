@@ -31,15 +31,11 @@ class GeneralActiveAlertRegister(GeneralAlertRegister):
 	def file(self, alert: AmpelAlertProtocol, filter_res: None | int = None) -> None:
 
 		alid = alert.id
-		if alid > self.alert_max:
-			self.alert_max = alid
-		if alid < self.alert_min:
-			self.alert_min = alid
+		self.alert_max = max(alid, self.alert_max)
+		self.alert_min = min(alid, self.alert_min)
 
 		sid = alert.stock
-		if sid > self.stock_max: # type: ignore[operator]
-			self.stock_max = sid # type: ignore[assignment]
-		if sid < self.stock_min: # type: ignore[operator]
-			self.stock_min = sid # type: ignore[assignment]
+		self.stock_max = max(sid, self.stock_max) # type: ignore[assignment]
+		self.stock_min = min(sid, self.stock_min) # type: ignore[assignment]
 
 		self._write(pack('<QQB', alid, sid, filter_res or 0))
