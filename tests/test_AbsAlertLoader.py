@@ -43,7 +43,7 @@ def test_TarAlertLoader():
         assert item.read() == value
 
 
-@pytest.fixture()
+@pytest.fixture
 def dummy_alert(tmpdir: Path) -> tuple[Path, bytes]:
     path = Path(tmpdir / "dummy.txt")
     content = uuid.uuid4().hex
