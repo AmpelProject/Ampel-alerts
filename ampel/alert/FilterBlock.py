@@ -48,7 +48,7 @@ class FilterBlock:
 	__slots__ = '__dict__', 'logger', 'channel', 'context', \
 		'chan_str', 'min_log_msg', 'filter_func', 'ac', 'overrule', \
 		'bypass', 'update_rej', 'rej_log_handler', 'rej_log_handle', \
-		'file', 'log', 'forward', 'buffer', 'buf_hdlr', 'stock_ids'
+		'file', 'log', 'forward', 'buffer', 'buf_hdlr', 'stock_ids'  # noqa: RUF023
 
 
 	def __init__(self,

@@ -40,11 +40,11 @@ class TarballWalker:
 	def _walk(self, fileobj):
 		"""
 		"""
-		archive = tarfile.open(fileobj=fileobj, mode='r:gz')
-		for info in archive:
-			if info.isfile():
-				fo = archive.extractfile(info)
-				if info.name.endswith('.avro'):
-					yield fo
-				elif info.name.endswith('.tar.gz'):
-					yield from self._walk(fo)
+		with tarfile.open(fileobj=fileobj, mode='r:gz') as archive:
+			for info in archive:
+				if info.isfile():
+					fo = archive.extractfile(info)
+					if info.name.endswith('.avro'):
+						yield fo
+					elif info.name.endswith('.tar.gz'):
+						yield from self._walk(fo)
