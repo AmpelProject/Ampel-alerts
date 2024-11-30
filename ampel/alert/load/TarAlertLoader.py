@@ -40,9 +40,9 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 		self._chained_tal: None | TarAlertLoader = None
 
 		if self.file_obj:
-			self._tar_file = tarfile.open(fileobj=self.file_obj, mode=self.tar_mode)
+			self._tar_file = tarfile.open(fileobj=self.file_obj, mode=self.tar_mode)  # noqa: SIM115
 		elif self.file_path:
-			self._tar_file = tarfile.open(self.file_path, mode=self.tar_mode)
+			self._tar_file = tarfile.open(self.file_path, mode=self.tar_mode)  # noqa: SIM115
 		else:
 			raise ValueError("Please provide value either for 'file_path' or 'file_obj'")
 
