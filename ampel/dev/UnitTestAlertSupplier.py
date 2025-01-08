@@ -8,7 +8,7 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 from ampel.abstract.AbsAlertSupplier import AbsAlertSupplier
-from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
+from ampel.alert.AmpelAlert import AmpelAlert
 
 
 class UnitTestAlertSupplier(AbsAlertSupplier):
@@ -25,7 +25,7 @@ class UnitTestAlertSupplier(AbsAlertSupplier):
 		)
 	)
 	"""
-	alerts: list[AmpelAlertProtocol]
+	alerts: list[AmpelAlert]
 
 	def __init__(self, **kwargs) -> None:
 		super().__init__(**kwargs)
