@@ -9,7 +9,7 @@
 
 import tarfile
 from gzip import GzipFile
-from typing import IO, TYPE_CHECKING, TypeAlias
+from typing import IO, TYPE_CHECKING, Literal, TypeAlias
 
 from ampel.abstract.AbsAlertLoader import AbsAlertLoader
 
@@ -28,7 +28,7 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 	alert per file.
 	"""
 
-	tar_mode: str = 'r:gz'
+	tar_mode: Literal["r", "r:*", "r:", "r:gz", "r:bz2", "r:xz"] = 'r:gz'
 	start: int = 0
 	file_obj: None | IOBase
 	file_path: None | str
