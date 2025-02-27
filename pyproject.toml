@@ -55,6 +55,7 @@ filterwarnings = [
 ]
 
 [tool.mypy]
+packages = ["ampel"]
 namespace_packages = true
 show_error_codes = true
 plugins = [
