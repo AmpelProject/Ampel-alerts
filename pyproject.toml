@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ampel-alerts"
-version = "0.10.2a0"
+version = "0.10.3a0"
 description = "Alert support for the Ampel system"
 authors = ["Valery Brinnel"]
 maintainers = ["Jakob van Santen <jakob.van.santen@desy.de>"]
@@ -28,7 +28,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-ampel-core = {version = ">=0.10.4.post0,<0.11"}
+ampel-core = {version = ">=0.10.6a0,<0.11"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.3.3"

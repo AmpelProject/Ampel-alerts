@@ -42,9 +42,7 @@ class AlertConsumerModel(AmpelBaseModel):
 
 	compiler_opts: None | CompilerOptions
 
-	database: str = "mongo"
-
-	updates_buffer_size: int = 500
+	ingester: UnitModel = UnitModel(unit="MongoIngester")
 
 	#: Calls `sys.exit()` with `exit_if_no_alert` as return code in case
 	#: no alert was processed (iter_count == 0)

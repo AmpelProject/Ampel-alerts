@@ -18,6 +18,7 @@ from typing_extensions import Self
 
 from ampel.abstract.AbsAlertSupplier import AbsAlertSupplier
 from ampel.abstract.AbsEventUnit import AbsEventUnit
+from ampel.abstract.AbsIngester import AbsIngester
 from ampel.alert.AlertConsumerError import AlertConsumerError
 from ampel.alert.AlertConsumerMetrics import AlertConsumerMetrics, stat_time
 from ampel.alert.FilterBlocksHandler import FilterBlocksHandler
@@ -33,7 +34,6 @@ from ampel.log.utils import report_exception
 from ampel.model.AlertConsumerModel import AlertConsumerModel
 from ampel.model.ingest.CompilerOptions import CompilerOptions
 from ampel.model.UnitModel import UnitModel
-from ampel.mongo.update.DBUpdatesBuffer import DBUpdatesBuffer
 from ampel.util.freeze import recursive_unfreeze
 from ampel.util.mappings import get_by_path, merge_dict
 
@@ -167,14 +167,14 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 	def get_ingestion_handler(self,
 		event_hdlr: EventHandler,
-		updates_buffer: DBUpdatesBuffer,
+		ingester: AbsIngester,
 		logger: AmpelLogger
 	) -> ChainedIngestionHandler:
 
 		return ChainedIngestionHandler(
-			self.context, self.shaper, self.directives, updates_buffer,
+			self.context, self.shaper, self.directives, ingester,
 			event_hdlr.get_run_id(), tier = 0, logger = logger,
-			database = self.database, trace_id = {'alertconsumer': self._trace_id},
+			trace_id = {'alertconsumer': self._trace_id},
 			compiler_opts = self.compiler_opts or CompilerOptions()
 		)
 
@@ -225,19 +225,21 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		if db_logging_handler := logger.get_db_logging_handler():
 			db_logging_handler.auto_flush = False
 
-		# Collects and executes pymongo.operations in collection Ampel_data
-		updates_buffer = DBUpdatesBuffer(
-			self._ampel_db, run_id, logger,
+		# Collects document insertions and routes them to the configured destination
+		ingester = self.context.loader.new_context_unit(
+			self.ingester,
+			context = self.context,
+			run_id = run_id,
 			error_callback = self.set_cancel_run,
 			acknowledge_callback = self._alert_supplier.acknowledge,
-			catch_signals = False, # we do it ourself
-			max_size = self.updates_buffer_size
+			logger = logger,
+			sub_type = AbsIngester,
 		)
 
 		any_filter = any([fb.filter_model for fb in self._fbh.filter_blocks])
 
 		# Set ingesters up
-		ing_hdlr = self.get_ingestion_handler(event_hdlr, updates_buffer, logger)
+		ing_hdlr = self.get_ingestion_handler(event_hdlr, ingester, logger)
 
 		# Loop variables
 		iter_max = self.iter_max
@@ -284,7 +286,6 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 		try:
 
-			updates_buffer.start()
 			chatty_interrupt = self.chatty_interrupt
 			register_signal = self.register_signal
 
@@ -337,7 +338,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 					for counter in stats.filter_accepted:
 						counter.inc()
 
-				with updates_buffer.group_updates():
+				with ingester.group():
 
 					if filter_results:
 
@@ -388,12 +389,11 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 						if db_logging_handler:
 							db_logging_handler.handle(lr)
 					
-					updates_buffer.acknowledge_on_push(alert)
+					ingester.acknowledge_on_delivery(alert)
 
 				iter_count += 1
 				stats.alerts.inc()
 
-				updates_buffer.check_push()
 				if db_logging_handler:
 					db_logging_handler.check_flush()
 
@@ -423,8 +423,6 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		# Also executed after SIGINT and SIGTERM
 		finally:
 
-			updates_buffer.stop()
-
 			if self._cancel_run > 0:
 				print("")
 				logger.info("Processing interrupted")
@@ -432,6 +430,8 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 				logger.log(self.shout, "Processing completed")
 
 			try:
+
+				ingester.flush()
 
 				# Flush loggers
 				logger.flush()
