@@ -338,58 +338,56 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 					for counter in stats.filter_accepted:
 						counter.inc()
 
-				with ingester.group():
+				if filter_results:
 
-					if filter_results:
+					stats.accepted.inc()
 
-						stats.accepted.inc()
+					try:
+						alert_extra: dict[str, Any] = {'alert': alert.id}
+						if self.include_alert_extra_with_keys and alert.extra:
+							for key, path in self.include_alert_extra_with_keys.items():
+								alert_extra[key] = get_by_path(alert.extra, path)
+						with stat_time.labels("ingest").time():
+							ing_hdlr.ingest(
+								alert.datapoints, filter_results, stock_id, alert.tag,
+								alert_extra, alert.extra.get('stock') if alert.extra else None
+							)
+					except (PyMongoError, AmpelLoggingError) as e:
+						print(f"{e.__class__.__name__}: abording run() procedure")
+						report_ingest_error(e, alert, filter_results)
+						raise e
 
-						try:
-							alert_extra: dict[str, Any] = {'alert': alert.id}
-							if self.include_alert_extra_with_keys and alert.extra:
-								for key, path in self.include_alert_extra_with_keys.items():
-									alert_extra[key] = get_by_path(alert.extra, path)
-							with stat_time.labels("ingest").time():
-								ing_hdlr.ingest(
-									alert.datapoints, filter_results, stock_id, alert.tag,
-									alert_extra, alert.extra.get('stock') if alert.extra else None
-								)
-						except (PyMongoError, AmpelLoggingError) as e:
-							print(f"{e.__class__.__name__}: abording run() procedure")
-							report_ingest_error(e, alert, filter_results)
+					except Exception as e:
+						report_ingest_error(e, alert, filter_results)
+
+						if self.raise_exc:
 							raise e
 
-						except Exception as e:
-							report_ingest_error(e, alert, filter_results)
+						if self.error_max:
+							err += 1
 
-							if self.raise_exc:
-								raise e
+						if err == self.error_max:
+							logger.error("Max number of error reached, breaking alert processing")
+							self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
 
-							if self.error_max:
-								err += 1
+				else:
 
-							if err == self.error_max:
-								logger.error("Max number of error reached, breaking alert processing")
-								self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
+					# All channels reject this alert
+					# no log entries goes into the main logs collection sinces those are redirected to Ampel_rej.
 
-					else:
-
-						# All channels reject this alert
-						# no log entries goes into the main logs collection sinces those are redirected to Ampel_rej.
-
-						# So we add a notification manually. For that, we don't use logger
-						# cause rejection messages were alreary logged into the console
-						# by the StreamHandler in channel specific RecordBufferingHandler instances.
-						# So we address directly db_logging_handler, and for that, we create
-						# a LogDocument manually.
-						lr = LightLogRecord(logger.name, LogFlag.INFO | logger.base_flag)
-						lr.stock = stock_id
-						lr.channel = reduced_chan_names # type: ignore[assignment]
-						lr.extra = {'a': alert.id, 'allout': True}
-						if db_logging_handler:
-							db_logging_handler.handle(lr)
-					
-					ingester.acknowledge_on_delivery(alert)
+					# So we add a notification manually. For that, we don't use logger
+					# cause rejection messages were alreary logged into the console
+					# by the StreamHandler in channel specific RecordBufferingHandler instances.
+					# So we address directly db_logging_handler, and for that, we create
+					# a LogDocument manually.
+					lr = LightLogRecord(logger.name, LogFlag.INFO | logger.base_flag)
+					lr.stock = stock_id
+					lr.channel = reduced_chan_names # type: ignore[assignment]
+					lr.extra = {'a': alert.id, 'allout': True}
+					if db_logging_handler:
+						db_logging_handler.handle(lr)
+				
+				ingester.acknowledge_on_delivery(alert)
 
 				iter_count += 1
 				stats.alerts.inc()
