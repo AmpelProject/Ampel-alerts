@@ -2,14 +2,14 @@
 
 [[package]]
 name = "ampel-core"
-version = "0.10.6a0"
+version = "0.10.6a2"
 description = "Alice in Modular Provenance-Enabled Land"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "ampel_core-0.10.6a0-py3-none-any.whl", hash = "sha256:4f985b321cd8487af6822d3b129c37af95fdc736c4545f2092718d4aaa653b5b"},
-    {file = "ampel_core-0.10.6a0.tar.gz", hash = "sha256:40b76853d5e357ef92ceb44a8affb7f85bdac627a75080ddafa4b483ebe23100"},
+    {file = "ampel_core-0.10.6a2-py3-none-any.whl", hash = "sha256:9a63f29257ab5159276e15bf5229eb192bac671608922d61af607b1bd42b6fa7"},
+    {file = "ampel_core-0.10.6a2.tar.gz", hash = "sha256:b023636bcf7dd5b09f69a99afd9ed0e224fc2dc5fca9d642277117af18d0e5ae"},
 ]
 
 [package.dependencies]
@@ -1045,4 +1045,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "482de6821dc5a6ccddbaaa498e122e2856957da5a453924a66bec86096bbd4c5"
+content-hash = "55a89b59e5f4d45dffde2fcb0e46760646309f14bbbfb0d2d6fb2832accf4d87"
