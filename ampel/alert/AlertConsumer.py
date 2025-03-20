@@ -230,6 +230,8 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 			self.ingester,
 			context = self.context,
 			run_id = run_id,
+			tier = 0,
+			process_name = self.process_name,
 			error_callback = self.set_cancel_run,
 			acknowledge_callback = self._alert_supplier.acknowledge,
 			logger = logger,
