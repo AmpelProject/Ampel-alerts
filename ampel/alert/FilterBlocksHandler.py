@@ -7,7 +7,8 @@
 # Last Modified Date:  21.05.2021
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from collections.abc import Sequence
+from collections.abc import Generator, Sequence
+from contextlib import contextmanager
 
 from ampel.alert.FilterBlock import FilterBlock
 from ampel.core.AmpelContext import AmpelContext
@@ -138,11 +139,12 @@ class FilterBlocksHandler:
 		"""
 
 
-	def ready(self, logger: 'AmpelLogger', run_id: int) -> None:
+	@contextmanager
+	def ready(self, logger: 'AmpelLogger', run_id: int) -> Generator[None, None, None]:
 		for fb in self.filter_blocks:
 			fb.ready(logger, run_id)
-
-
-	def done(self) -> None:
-		for fb in self.filter_blocks:
-			fb.done()
+		try:
+			yield
+		finally:
+			for fb in self.filter_blocks:
+				fb.done()

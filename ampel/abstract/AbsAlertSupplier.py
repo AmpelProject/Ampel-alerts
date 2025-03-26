@@ -9,7 +9,7 @@
 
 from collections.abc import Iterator
 
-from ampel.base.AmpelABC import AmpelABC
+from ampel.abstract.AbsContextManager import AbsContextManager
 from ampel.base.AmpelUnit import AmpelUnit
 from ampel.base.decorator import abstractmethod
 from ampel.log.AmpelLogger import AmpelLogger
@@ -17,7 +17,7 @@ from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 from ampel.struct.Resource import Resource
 
 
-class AbsAlertSupplier(AmpelUnit, AmpelABC, abstract=True):
+class AbsAlertSupplier(AmpelUnit, AbsContextManager, abstract=True):
 	"""
 	Iterable class that, for each alert payload provided by the underlying alert_loader,
 	returns an object that implements :class:`~ampel.protocol.AmpelAlertProtocol`.
@@ -33,6 +33,9 @@ class AbsAlertSupplier(AmpelUnit, AmpelABC, abstract=True):
 
 	def add_resource(self, name: str, value: Resource) -> None:
 		self.resources[name] = value
+
+	def __exit__(self, exc_type, exc_value, traceback) -> None:
+		pass
 
 	@abstractmethod
 	def __iter__(self) -> Iterator[AmpelAlertProtocol]:

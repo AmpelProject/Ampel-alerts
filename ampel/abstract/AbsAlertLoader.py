@@ -10,7 +10,7 @@
 from collections.abc import Iterator
 from typing import Generic
 
-from ampel.base.AmpelABC import AmpelABC
+from ampel.abstract.AbsContextManager import AbsContextManager
 from ampel.base.AmpelUnit import AmpelUnit
 from ampel.base.decorator import abstractmethod
 from ampel.log.AmpelLogger import AmpelLogger
@@ -18,7 +18,7 @@ from ampel.struct.Resource import Resource
 from ampel.types import T
 
 
-class AbsAlertLoader(AmpelUnit, AmpelABC, Generic[T], abstract=True):
+class AbsAlertLoader(AbsContextManager, AmpelUnit, Generic[T], abstract=True):
 
 	@property
 	def logger(self) -> AmpelLogger:
@@ -32,6 +32,9 @@ class AbsAlertLoader(AmpelUnit, AmpelABC, Generic[T], abstract=True):
 		super().__init__(**kwargs)
 		self._logger: AmpelLogger = AmpelLogger.get_logger()
 		self._resources: dict[str, Resource] = {}
+
+	def __exit__(self, exc_type, exc_value, traceback) -> None:
+		pass
 
 	def set_logger(self, logger: AmpelLogger) -> None:
 		self._logger = logger
