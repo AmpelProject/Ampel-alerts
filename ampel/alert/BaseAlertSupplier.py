@@ -86,6 +86,13 @@ class BaseAlertSupplier(AbsAlertSupplier, abstract=True):
 	def __iter__(self) -> Iterator[AmpelAlertProtocol]:
 		return self
 
+	def __enter__(self) -> "BaseAlertSupplier":
+		self.alert_loader.__enter__()
+		return self
+
+	def __exit__(self, exc_type, exc_value, traceback) -> None:
+		return self.alert_loader.__exit__(exc_type, exc_value, traceback)
+
 	@abstractmethod
 	def __next__(self) -> AmpelAlertProtocol:
 		...

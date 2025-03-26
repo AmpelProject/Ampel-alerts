@@ -272,6 +272,9 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 			self._fbh.ready(logger, run_id),
 			# Flush at end of context
 			logger,
+			# Set up alert supplier, and tear down at end of context
+			self._alert_supplier,
+			# Set up ingester, and tear down at end of context
 			self.context.loader.new_context_unit(
 				self.ingester,
 				context = self.context,
