@@ -188,13 +188,16 @@ def test_with_filter(dev_context, single_source_directive):
 
 def test_suspend_in_supplier(dev_context, single_source_directive):
 
+    latch = threading.Event()
+
     # simulate a producer that blocks while waiting fo upstream input
     class BlockingAlertSupplier(UnitTestAlertSupplier):
         def __iter__(self):
             for el in super().__iter__():
-                print("sleep 3")
-                time.sleep(3)
+                if latch.is_set():
+                    time.sleep(3)
                 yield el
+                latch.set()
 
     dev_context.register_unit(BlockingAlertSupplier)
     ap = AlertConsumer(
@@ -205,19 +208,19 @@ def test_suspend_in_supplier(dev_context, single_source_directive):
         supplier={
             "unit": "BlockingAlertSupplier",
             "config": {
-                "alerts": [AmpelAlert(id="alert", stock="stockystock", datapoints=[])]
+                "alerts": [AmpelAlert(id="alert", stock="stockystock", datapoints=[])]*2
             },
         },
     )
 
     def alarm():
-        time.sleep(0.5)
+        latch.wait()
         os.kill(os.getpid(), signal.SIGINT)
 
     t = threading.Thread(target=alarm)
     t.start()
     t0 = time.time()
-    assert ap.run() == 0, "AP suspended before first alert was processed"
+    assert ap.run() == 1, "AP suspended before second alert was processed"
     assert time.time() - t0 < 2, "AP suspended before supplier timed out"
     t.join()
 
