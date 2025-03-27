@@ -8,8 +8,9 @@
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
 import sys
-from collections.abc import Sequence
-from contextlib import suppress
+from collections.abc import Callable, Generator, Sequence
+from contextlib import contextmanager, suppress
+from functools import partial
 from signal import SIGINT, SIGTERM, default_int_handler, signal
 from typing import TYPE_CHECKING, Any
 
@@ -130,14 +131,36 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 			self.context, logger, self.directives, self.process_name, self.db_log_format
 		)
 
-		#signal(SIGTERM, self.register_sigterm)
-		signal(SIGTERM, default_int_handler) # type: ignore[arg-type]
 		logger.info("AlertConsumer setup completed")
 
 
 	@property
 	def alert_supplier(self) -> AbsAlertSupplier:
 		return self._alert_supplier
+
+	@contextmanager
+	def _handle(
+		self,
+		signal_handler: Callable[[int, Any],None],
+		exception_handler: Callable[[BaseException], None],
+		logger: None | AmpelLogger = None
+	) -> Generator[None, None, None]:
+		prev_handlers = {signum: signal(signum, signal_handler) for signum in (SIGINT, SIGTERM)}
+		try:
+			yield
+		except KeyboardInterrupt:
+			pass
+		except Exception as e:
+			exception_handler(e)
+		finally:
+			for signum, prev_handler in prev_handlers.items():
+				signal(signum, prev_handler)
+			if logger is not None:
+				if self._cancel_run > 0:
+					print("")
+					logger.info("Processing interrupted", stacklevel=4)
+				else:
+					logger.log(self.shout, "Processing completed", stacklevel=4)
 
 
 	def register_signal(self, signum: int, frame) -> None:
@@ -287,138 +310,115 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 				sub_type = AbsIngester,
 			) as ingester
 		):
-			try:
 
-				# Set ingesters up
-				ing_hdlr = self.get_ingestion_handler(event_hdlr, ingester, logger)
+			# Set ingesters up
+			ing_hdlr = self.get_ingestion_handler(event_hdlr, ingester, logger)
 
-				chatty_interrupt = self.chatty_interrupt
-				register_signal = self.register_signal
+			handle_exc = partial(event_hdlr.handle_error, logger=logger)
+			chatty_interrupt = partial(self._handle, self.chatty_interrupt, handle_exc, logger)
+			register_signal = partial(self._handle, self.register_signal, handle_exc)
+
+			with chatty_interrupt():
 
 				# Iterate over alerts
 				for alert in self._alert_supplier:
 
 					# Allow execution to complete for this alert (loop exited after ingestion of current alert)
-					signal(SIGINT, register_signal)
-					signal(SIGTERM, register_signal)
+					with register_signal():
 
-					# Associate upcoming log entries with the current transient id
-					stock_id = alert.stock
+						# Associate upcoming log entries with the current transient id
+						stock_id = alert.stock
 
-					if any_filter:
+						if any_filter:
 
-						filter_results = []
+							filter_results = []
 
-						# Loop through filter blocks
-						for fblock in fblocks:
+							# Loop through filter blocks
+							for fblock in fblocks:
 
-							try:
-								# Apply filter (returns None/False in case of rejection or True/int in case of match)
-								res = fblock.filter(alert)
-								if res[1]:
-									filter_results.append(res) # type: ignore[arg-type]
+								try:
+									# Apply filter (returns None/False in case of rejection or True/int in case of match)
+									res = fblock.filter(alert)
+									if res[1]:
+										filter_results.append(res) # type: ignore[arg-type]
 
-							# Unrecoverable (logging related) errors
-							except (PyMongoError, AmpelLoggingError) as e:  # noqa: PERF203
-								print(f"{e.__class__.__name__}: abording run() procedure")
-								report_filter_error(e, alert, fblock)
-								raise e
-
-							# Possibly tolerable errors (could be an error from a contributed filter)
-							except Exception as e:
-
-								if db_logging_handler:
-									fblock.forward(db_logging_handler, stock=stock_id, extra={'a': alert.id})
-
-								report_filter_error(e, alert, fblock)
-
-								if self.raise_exc:
+								# Unrecoverable (logging related) errors
+								except (PyMongoError, AmpelLoggingError) as e:  # noqa: PERF203
+									print(f"{e.__class__.__name__}: abording run() procedure")
+									report_filter_error(e, alert, fblock)
 									raise e
-								if self.error_max:
-									err += 1
-								if err == self.error_max:
-									logger.error("Max number of error reached, breaking alert processing")
-									self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
-					else:
-						# if bypassing filters, track passing rates at top level
-						for counter in stats.filter_accepted:
-							counter.inc()
 
-					with ingester.group([alert]):
+								# Possibly tolerable errors (could be an error from a contributed filter)
+								except Exception as e:
 
-						if filter_results:
+									if db_logging_handler:
+										fblock.forward(db_logging_handler, stock=stock_id, extra={'a': alert.id})
 
-							stats.accepted.inc()
+									report_filter_error(e, alert, fblock)
 
-							try:
-								alert_extra: dict[str, Any] = {'alert': alert.id}
-								if self.include_alert_extra_with_keys and alert.extra:
-									for key, path in self.include_alert_extra_with_keys.items():
-										alert_extra[key] = get_by_path(alert.extra, path)
-								with stat_time.labels("ingest").time():
-									ing_hdlr.ingest(
-										alert.datapoints, filter_results, stock_id, alert.tag,
-										alert_extra, alert.extra.get('stock') if alert.extra else None
-									)
-							except Exception as e:
-								print(f"{e.__class__.__name__}: abording run() procedure")
-								report_ingest_error(e, alert, filter_results)
-								raise e
-
+									if self.raise_exc:
+										raise e
+									if self.error_max:
+										err += 1
+									if err == self.error_max:
+										logger.error("Max number of error reached, breaking alert processing")
+										self.set_cancel_run(AlertConsumerError.TOO_MANY_ERRORS)
 						else:
+							# if bypassing filters, track passing rates at top level
+							for counter in stats.filter_accepted:
+								counter.inc()
 
-							# All channels reject this alert
-							# no log entries goes into the main logs collection sinces those are redirected to Ampel_rej.
+						with ingester.group([alert]):
 
-							# So we add a notification manually. For that, we don't use logger
-							# cause rejection messages were alreary logged into the console
-							# by the StreamHandler in channel specific RecordBufferingHandler instances.
-							# So we address directly db_logging_handler, and for that, we create
-							# a LogDocument manually.
-							lr = LightLogRecord(logger.name, LogFlag.INFO | logger.base_flag)
-							lr.stock = stock_id
-							lr.channel = reduced_chan_names # type: ignore[assignment]
-							lr.extra = {'a': alert.id, 'allout': True}
-							if db_logging_handler:
-								db_logging_handler.handle(lr)
+							if filter_results:
 
-					iter_count += 1
-					stats.alerts.inc()
+								stats.accepted.inc()
 
-					if db_logging_handler:
-						db_logging_handler.check_flush()
+								try:
+									alert_extra: dict[str, Any] = {'alert': alert.id}
+									if self.include_alert_extra_with_keys and alert.extra:
+										for key, path in self.include_alert_extra_with_keys.items():
+											alert_extra[key] = get_by_path(alert.extra, path)
+									with stat_time.labels("ingest").time():
+										ing_hdlr.ingest(
+											alert.datapoints, filter_results, stock_id, alert.tag,
+											alert_extra, alert.extra.get('stock') if alert.extra else None
+										)
+								except Exception as e:
+									print(f"{e.__class__.__name__}: abording run() procedure")
+									report_ingest_error(e, alert, filter_results)
+									raise e
 
-					if iter_count == iter_max:
-						logger.info("Reached max number of iterations")
-						break
+							else:
 
-					# Exit if so requested (SIGINT, error registered by DBUpdatesBuffer, ...)
-					if self._cancel_run > 0:
-						break
+								# All channels reject this alert
+								# no log entries goes into the main logs collection sinces those are redirected to Ampel_rej.
 
-					# Restore system default sig handling so that KeyBoardInterrupt
-					# can be raised during supplier execution
-					signal(SIGINT, chatty_interrupt)
-					signal(SIGTERM, chatty_interrupt)
+								# So we add a notification manually. For that, we don't use logger
+								# cause rejection messages were alreary logged into the console
+								# by the StreamHandler in channel specific RecordBufferingHandler instances.
+								# So we address directly db_logging_handler, and for that, we create
+								# a LogDocument manually.
+								lr = LightLogRecord(logger.name, LogFlag.INFO | logger.base_flag)
+								lr.stock = stock_id
+								lr.channel = reduced_chan_names # type: ignore[assignment]
+								lr.extra = {'a': alert.id, 'allout': True}
+								if db_logging_handler:
+									db_logging_handler.handle(lr)
 
-			# Executed if SIGINT was sent during supplier execution
-			except KeyboardInterrupt:
-				pass
+						iter_count += 1
+						stats.alerts.inc()
 
-			except Exception as e:
-				event_hdlr.handle_error(e, logger)
+						if db_logging_handler:
+							db_logging_handler.check_flush()
 
-				if self.raise_exc:
-					raise e
+						if iter_count == iter_max:
+							logger.info("Reached max number of iterations")
+							break
 
-			# Also executed after SIGINT and SIGTERM
-			finally:
-
-				if self._cancel_run > 0:
-					print("")
-					logger.info("Processing interrupted")
-				else:
-					logger.log(self.shout, "Processing completed")
+						# Exit if so requested (SIGINT, error registered by DBUpdatesBuffer, ...)
+						if self._cancel_run > 0:
+							break
 
 		if self.exit_if_no_alert and iter_count == 0:
 			sys.exit(self.exit_if_no_alert)
