@@ -39,7 +39,7 @@ class DummyFilter(AbsAlertFilter):
 def _dummy_units(dev_context: DevAmpelContext):
 
     # register dummy units in-process so gen_config_id can find them
-    from ampel.test import dummy
+    from ampel.test import dummy  # noqa: PLC0415
     for name, klass in dummy.__dict__.items():
         if name.startswith("Dummy"):
             dev_context.register_unit(klass)

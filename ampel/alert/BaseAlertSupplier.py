@@ -68,12 +68,12 @@ class BaseAlertSupplier(AbsAlertSupplier, abstract=True):
 			self._deserialize = json.load
 
 		elif self.deserialize == "csv":
-			from csv import DictReader
+			from csv import DictReader  # noqa: PLC0415
 			self._deserialize = DictReader # type: ignore
 
 		elif self.deserialize == "avro":
 
-			from fastavro import reader
+			from fastavro import reader  # noqa: PLC0415
 			def avro_next(arg: IOBase):
 				return next(reader(arg))
 
