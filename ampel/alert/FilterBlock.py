@@ -34,7 +34,6 @@ from ampel.types import ChannelId, StockId
 def no_filter(alert: Any) -> bool:
 	return True
 
-# ruff: noqa: PLE0237
 
 class FilterBlock:
 	"""
