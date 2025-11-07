@@ -7,13 +7,12 @@
 # Last Modified Date:  24.11.2021
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
-from ampel.base.AmpelABC import AmpelABC
 from ampel.base.decorator import abstractmethod
 from ampel.base.LogicalUnit import LogicalUnit
 from ampel.protocol.AmpelAlertProtocol import AmpelAlertProtocol
 
 
-class AbsAlertFilter(AmpelABC, LogicalUnit, abstract=True):
+class AbsAlertFilter(LogicalUnit, abstract=True):
 	""" Base class for T0 alert filters """
 
 	@abstractmethod
