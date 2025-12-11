@@ -7,6 +7,7 @@
 # Last Modified Date:  05.04.2023
 # Last Modified By:    valery brinnel <firstname.lastname@gmail.com>
 
+import warnings
 from typing import Any
 
 import ujson
@@ -57,12 +58,12 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 
 	def craft_t0_process(self,
 		alconf: FirstPassConfig | dict[str, Any],
-		controller: str | dict[str, Any],
 		supplier: str | dict[str, Any],
 		shaper: str | dict[str, Any],
 		combiner: str | dict[str, Any],
 		muxer: None | str | dict[str, Any] = None,
-		compiler_opts: None | str | dict[str, Any] = None
+		compiler_opts: None | str | dict[str, Any] = None,
+		controller: str | dict[str, Any] | None = None,
 	) -> dict[str, Any]:
 		"""
 		This method needs a reference to a FirstPassConfig dict because
@@ -78,6 +79,11 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 		:param state_t2: units to schedule on t1_combine
 		"""
 
+		if controller is not None:
+			warnings.warn(
+				"The 'controller' argument is deprecated and will be removed in future versions.", DeprecationWarning, stacklevel=2,
+			) 
+
 		ret: dict[str, Any] = {
 			"tier": 0,
 			"schedule": ["super"],
@@ -86,7 +92,6 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 			"source": self.source,
 			"channel": self.channel,
 			"name": f"{self.channel}|T0|{self.template}",
-			"controller": resolve_shortcut(controller),
 			"processor": {
 				"unit": "AlertConsumer",
 				"config": self.craft_t0_processor_config(

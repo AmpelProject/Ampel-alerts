@@ -5,6 +5,7 @@ import pytest
 
 from ampel.log.AmpelLogger import AmpelLogger
 from ampel.model.ChannelModel import ChannelModel
+from ampel.model.ProcessModel import ProcessModel
 from ampel.template.AbsEasyChannelTemplate import AbsEasyChannelTemplate
 
 if TYPE_CHECKING:   
@@ -23,7 +24,6 @@ class LegacyChannelTemplate(AbsEasyChannelTemplate):
             0,
             self.craft_t0_process(
                 first_pass_config,
-                controller={},
                 supplier={},
                 shaper={},
                 combiner={},
@@ -130,6 +130,7 @@ def test_state_t2_instantiation(t2_compute, target, expected, exception, dev_con
 
     assert processes
     proc = processes[0]
+    ProcessModel(**proc) # validate process structure
     assert proc["tier"] == 0
     assert (directives := proc["processor"]["config"]["directives"])
     directive = directives[0]
