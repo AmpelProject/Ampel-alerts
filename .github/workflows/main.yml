@@ -27,6 +27,6 @@ jobs:
     with:
       lint: true
       # renovate: datasource=python-version depName=python
-      python-version: "3.14.4"
+      python-version: "3.14.5"
       # renovate: datasource=pypi depName=ruff
-      ruff-version: "0.15.11"
+      ruff-version: "0.15.13"
