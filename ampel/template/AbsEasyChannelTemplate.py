@@ -31,7 +31,7 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 	Known subclass: :class:`~ampel.model.ZTFLegacyChannelTemplate.ZTFLegacyChannelTemplate`
 	"""
 	#: Filter to apply to incoming datapoints
-	t0_filter: None | FilterModel = None
+	t0_filter: FilterModel | None = None
 
 	#: T2 units to trigger when transient is updated. Dependencies of tied
 	#: units will be added automatically.
@@ -61,8 +61,8 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 		supplier: str | dict[str, Any],
 		shaper: str | dict[str, Any],
 		combiner: str | dict[str, Any],
-		muxer: None | str | dict[str, Any] = None,
-		compiler_opts: None | str | dict[str, Any] = None,
+		muxer: str | dict[str, Any] | None = None,
+		compiler_opts: str | dict[str, Any] | None = None,
 		controller: str | dict[str, Any] | None = None,
 	) -> dict[str, Any]:
 		"""
@@ -112,9 +112,9 @@ class AbsEasyChannelTemplate(AbsChannelTemplate, abstract=True):
 		supplier: str | dict[str, Any],
 		shaper: str | dict[str, Any],
 		combiner: str | dict[str, Any],
-		filter_dict: None | dict[str, Any] = None,
-		muxer: None | str | dict[str, Any] = None,
-		compiler_opts: None | str | dict[str, Any] = None
+		filter_dict: dict[str, Any] | None = None,
+		muxer: str | dict[str, Any] | None = None,
+		compiler_opts: str | dict[str, Any] | None = None
 	) -> dict[str, Any]:
 		"""
 		This method needs a reference to a FirstPassConfig dict because

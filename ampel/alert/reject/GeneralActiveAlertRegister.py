@@ -28,7 +28,7 @@ class GeneralActiveAlertRegister(GeneralAlertRegister):
 	stock_min: int
 	stock_max: int
 
-	def file(self, alert: AmpelAlertProtocol, filter_res: None | int = None) -> None:
+	def file(self, alert: AmpelAlertProtocol, filter_res: int | None = None) -> None:
 
 		alid = alert.id
 		self.alert_max = max(alid, self.alert_max)

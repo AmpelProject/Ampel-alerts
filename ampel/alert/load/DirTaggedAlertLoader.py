@@ -27,7 +27,7 @@ class DirTaggedAlertLoader(DirAlertLoader):
 	Make sure to use a compatible alert supplier!
 	"""
 
-	def __next__(self) -> tuple[StringIO | BytesIO, None | list[str | int]]: # type: ignore[override]
+	def __next__(self) -> tuple[StringIO | BytesIO, list[str | int] | None]: # type: ignore[override]
 
 		if not self._files:
 			self.build_file_list()

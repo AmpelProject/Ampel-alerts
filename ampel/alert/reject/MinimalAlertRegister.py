@@ -54,7 +54,7 @@ class MinimalAlertRegister(BaseAlertRegister):
 	@classmethod
 	def find_alert(cls, # type: ignore[override]
 		f: BinaryIO | str, alert_id: int | list[int], **kwargs
-	) -> None | list[tuple[int, ...]]:
+	) -> list[tuple[int, ...]] | None:
 		if ret := super().find_alert(f, alert_id=alert_id, **kwargs):
 			return [(el[0], -el[1]) for el in ret]
 		return None

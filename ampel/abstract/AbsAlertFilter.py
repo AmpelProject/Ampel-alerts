@@ -16,7 +16,7 @@ class AbsAlertFilter(LogicalUnit, abstract=True):
 	""" Base class for T0 alert filters """
 
 	@abstractmethod
-	def process(self, alert: AmpelAlertProtocol) -> None | bool | int:
+	def process(self, alert: AmpelAlertProtocol) -> bool | int | None:
 		"""
 		Filters an alert.
 		

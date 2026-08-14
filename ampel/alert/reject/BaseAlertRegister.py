@@ -79,9 +79,9 @@ class BaseAlertRegister(AbsAlertRegister, abstract=True):
 	#:
 	#:   The current file suffix number is encoded in the header. If the current suffix number is 10 and
 	#:   you move files to another folder, the next rename will create ampel_register.bin.gz.11 nonetheless.
-	file_cap: None | dict[Literal['runs', 'blocks'], int] # type: ignore[assignment]
+	file_cap: dict[Literal['runs', 'blocks'], int] | None # type: ignore[assignment]
 
-	header_bounds: ClassVar[None | Sequence[str]] = None
+	header_bounds: ClassVar[Sequence[str] | None] = None
 
 
 	def __init__(self, **kwargs):
@@ -181,7 +181,7 @@ class BaseAlertRegister(AbsAlertRegister, abstract=True):
 	@classmethod
 	def find_alert(cls,
 		f: BinaryIO | str, alert_id: int | list[int], alert_id_bytes_len: int = 8, **kwargs
-	) -> None | list[tuple[int, ...]]:
+	) -> list[tuple[int, ...]] | None:
 		"""
 		:param f: file path (str) or file handle (which will not be closed)
 		:param kwargs: see method `ampel.util.register.find` docstring.
@@ -201,7 +201,7 @@ class BaseAlertRegister(AbsAlertRegister, abstract=True):
 	def find_stock(cls,
 		f: BinaryIO | str, stock_id: int | list[int],
 		stock_offset: int, stock_bytes_len: int = 8, **kwargs
-	) -> None | list[tuple[int, ...]]:
+	) -> list[tuple[int, ...]] | None:
 		"""
 		:param f: file path (str) or file handle (which will not be closed)
 		:param stock_offset:
