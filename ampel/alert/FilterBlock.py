@@ -54,7 +54,7 @@ class FilterBlock:
 		index: int,
 		context: AmpelContext,
 		channel: ChannelId,
-		filter_model: None | FilterModel,
+		filter_model: FilterModel | None,
 		process_name: str,
 		logger: AmpelLogger,
 		check_new: bool = False,
@@ -132,10 +132,10 @@ class FilterBlock:
 				self.bypass = self.idx, False
 				self.update_rej = True
 
-			self.rej_log_handle: None | Callable[[LightLogRecord | LogRecord], None] = None
-			self.rej_log_handler: None | LoggingHandlerProtocol = None
-			self.file: None | Callable[[AmpelAlertProtocol, int], None] = None
-			self.register: None | AbsAlertRegister = None
+			self.rej_log_handle: Callable[[LightLogRecord | LogRecord], None] | None = None
+			self.rej_log_handler: LoggingHandlerProtocol | None = None
+			self.file: Callable[[AmpelAlertProtocol, int], None] | None = None
+			self.register: AbsAlertRegister | None = None
 		else:
 			self.filter_func = no_filter
 			self.bypass = self.idx, False

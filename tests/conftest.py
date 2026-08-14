@@ -38,7 +38,7 @@ def dev_context(_patch_mongo, testing_config):
 
 
 class DummyFilter(AbsAlertFilter):
-    def process(self, alert: AmpelAlertProtocol) -> None | bool | int:
+    def process(self, alert: AmpelAlertProtocol) -> bool | int | None:
         return True
 
 

@@ -21,12 +21,12 @@ class GeneralAlertRegister(BaseAlertRegister):
 	struct: Literal['<QQB'] = '<QQB'
 
 
-	def file(self, alert: AmpelAlertProtocol, filter_res: None | int = None) -> None:
+	def file(self, alert: AmpelAlertProtocol, filter_res: int | None = None) -> None:
 		self._write(pack('<QQB', alert.id, alert.stock, filter_res or 0))
 
 
 	@classmethod
 	def find_stock(cls, # type: ignore[override]
 		f: BinaryIO | str, stock_id: int | list[int], **kwargs
-	) -> None | list[tuple[int, ...]]:
+	) -> list[tuple[int, ...]] | None:
 		return super().find_stock(f, stock_id=stock_id, stock_offset=8, **kwargs)

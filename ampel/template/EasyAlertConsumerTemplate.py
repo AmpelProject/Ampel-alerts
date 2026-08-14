@@ -18,15 +18,15 @@ class EasyAlertConsumerTemplate(AbsConfigMorpher):
     #: Alert supplier unit
     supplier: str | UnitModel
     #: Optional override for alert loader
-    loader: None | str | UnitModel
+    loader: str | UnitModel | None
     #: Alert shaper
     shaper: str | UnitModel
     #: Document creation options
     compiler_opts: CompilerOptions
     #: Alert filter. None disables filtering
-    filter: None | str | FilterModel
+    filter: str | FilterModel | None
     #: Augment alerts with external content before ingestion
-    muxer: None | str | UnitModel
+    muxer: str | UnitModel | None
     # Combine datapoints into states
     combiner: str | UnitModel
 
@@ -68,7 +68,7 @@ class EasyAlertConsumerTemplate(AbsConfigMorpher):
         ...
 
     @staticmethod
-    def _config_as_dict(arg: None | str | UnitModel) -> None | dict[str, Any]:
+    def _config_as_dict(arg: str | UnitModel | None) -> dict[str, Any] | None:
         if arg is None:
             return None
         return (arg if isinstance(arg, UnitModel) else UnitModel(unit=arg)).dict(exclude_unset=True)

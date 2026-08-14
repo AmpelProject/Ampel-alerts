@@ -37,8 +37,8 @@ class DBRejectedLogsHandler(ContextUnit):
 	aggregate_interval: int = 1
 	flush_len: int = 1000
 	log_dicts: list[dict[str, Any]] = []
-	prev_record: None | LightLogRecord | LogRecord = None
-	run_id: None | int | list[int] = None
+	prev_record: LightLogRecord | LogRecord | None = None
+	run_id: int | list[int] | None = None
 
 
 	def __init__(self, **kwargs):
@@ -65,7 +65,7 @@ class DBRejectedLogsHandler(ContextUnit):
 		self.run_id = run_id
 
 
-	def get_run_id(self) -> None | int | list[int]:
+	def get_run_id(self) -> int | list[int] | None:
 		return self.run_id
 
 

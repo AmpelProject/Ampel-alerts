@@ -51,7 +51,7 @@ class FullAlertRegister(BaseAlertRegister):
 	@classmethod
 	def find_alert(cls, # type: ignore[override]
 		f: BinaryIO | str, alert_id: int | list[int], **kwargs
-	) -> None | list[tuple[int, ...]]:
+	) -> list[tuple[int, ...]] | None:
 		if ret := super().find_alert(f, alert_id=alert_id, **kwargs):
 			return [(el[0], el[1], el[2], -el[3]) for el in ret]
 		return None
@@ -60,7 +60,7 @@ class FullAlertRegister(BaseAlertRegister):
 	@classmethod
 	def find_stock(cls, # type: ignore[override]
 		f: BinaryIO | str, stock_id: int | list[int], **kwargs
-	) -> None | list[tuple[int, ...]]:
+	) -> list[tuple[int, ...]] | None:
 		if ret := super().find_stock(f, stock_id=stock_id, offset_in_block=8, **kwargs):
 			return [(el[0], el[1], el[2], -el[3]) for el in ret]
 		return None

@@ -30,14 +30,14 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 
 	tar_mode: Literal["r", "r:*", "r:", "r:gz", "r:bz2", "r:xz"] = 'r:gz'
 	start: int = 0
-	file_obj: None | IOBase
-	file_path: None | str
+	file_obj: IOBase | None
+	file_path: str | None
 
 	def __init__(self, **kwargs) -> None:
 
 		super().__init__(**kwargs)
 
-		self._chained_tal: None | TarAlertLoader = None
+		self._chained_tal: TarAlertLoader | None = None
 
 		if self.file_obj:
 			self._tar_file = tarfile.open(fileobj=self.file_obj, mode=self.tar_mode)  # noqa: SIM115
@@ -109,7 +109,7 @@ class TarAlertLoader(AbsAlertLoader[IOBase]):
 		return next(self)
 
 
-	def get_chained_next(self) -> None | IOBase:
+	def get_chained_next(self) -> IOBase | None:
 		assert self._chained_tal is not None
 		file_obj = next(self._chained_tal, None)
 		if file_obj is None:

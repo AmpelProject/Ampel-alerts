@@ -84,7 +84,7 @@ def argv_context(args: list[str]):
         sys.argv = argv
 
 
-def run(args: list[str]) -> None | int | str:
+def run(args: list[str]) -> int | str | None:
     try:
         with argv_context(args):
             main()

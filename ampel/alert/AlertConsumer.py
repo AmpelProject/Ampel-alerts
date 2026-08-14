@@ -57,7 +57,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 
 
 	@classmethod
-	def from_process(cls, context: AmpelContext, process_name: str, override: None | dict = None):
+	def from_process(cls, context: AmpelContext, process_name: str, override: dict | None = None):
 		"""
 		Convenience method instantiating an AlertConsumer using the config entry from a given T0 process.
 		
@@ -143,7 +143,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		self,
 		signal_handler: Callable[[int, Any],None],
 		exception_handler: Callable[[BaseException], None],
-		logger: None | AmpelLogger = None
+		logger: AmpelLogger | None = None
 	) -> Generator[None, None, None]:
 		prev_handlers = {signum: signal(signum, signal_handler) for signum in (SIGINT, SIGTERM)}
 		try:
@@ -432,7 +432,7 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		arg_e: Exception,
 		event_hdlr: EventHandler,
 		logger: AmpelLogger,
-		extra: None | dict[str, Any] = None
+		extra: dict[str, Any] | None = None
 	) -> None:
 		"""
 		:param extra: optional extra key/value fields to add to 'trouble' doc

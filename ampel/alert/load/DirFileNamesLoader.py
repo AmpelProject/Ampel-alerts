@@ -23,7 +23,7 @@ class DirFileNamesLoader(AbsAlertLoader[str]):
 
 	folder: str
 	extension: str
-	max_entries: None | int = None
+	max_entries: int | None = None
 
 	def __init__(self, **kwargs) -> None:
 

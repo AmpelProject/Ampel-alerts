@@ -46,7 +46,7 @@ class BaseAlertSupplier(AbsAlertSupplier, abstract=True):
 	loader: UnitModel
 
 	# Underlying serialization
-	deserialize: None | Literal["avro", "json", "csv"]
+	deserialize: Literal["avro", "json", "csv"] | None
 
 
 	def __init__(self, **kwargs) -> None:

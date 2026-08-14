@@ -40,13 +40,13 @@ class AlertConsumerModel(AmpelBaseModel):
 	#: Unit to use to supply alerts (str is just a shortcut for a configless UnitModel(unit=str))
 	supplier: UnitModel
 
-	compiler_opts: None | CompilerOptions
+	compiler_opts: CompilerOptions | None
 
 	ingester: UnitModel = UnitModel(unit="MongoIngester")
 
 	#: Calls `sys.exit()` with `exit_if_no_alert` as return code in case
 	#: no alert was processed (iter_count == 0)
-	exit_if_no_alert: None | int = None
+	exit_if_no_alert: int | None = None
 
 	#: Fields from alert.extra to include in journal entries, of the form
 	#: journal_key: dotted.path.in.extra.dict
