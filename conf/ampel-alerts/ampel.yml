@@ -14,5 +14,8 @@ unit:
 # Logical unit
 - ampel.alert.filter.BasicMultiFilter
 
+# Reject handler
+- ampel.alert.reject.DBRejectedLogsHandler
+
 template:
   ingest_alerts: ampel.template.EasyAlertConsumerTemplate
