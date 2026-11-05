@@ -30,9 +30,10 @@ import inspect
 
 import pytest
 
+from ampel.abstract.AbsAlertFilter import AbsAlertFilter
 from ampel.alert.AlertConsumer import AlertConsumer
 from ampel.alert.AmpelAlert import AmpelAlert
-from ampel.abstract.AbsAlertFilter import AbsAlertFilter
+from ampel.alert.reject.DBRejectedLogsHandler import DBRejectedLogsHandler
 from ampel.dev.DevAmpelContext import DevAmpelContext
 from ampel.model.ingest.FilterModel import FilterModel
 from ampel.model.ingest.IngestBody import IngestBody
@@ -80,13 +81,13 @@ class AcceptingDebugFilter(AbsAlertFilter):
 
 
 @pytest.fixture
-def test_context(_patch_mongo, testing_config):
+def alert_context(_patch_mongo, testing_config):
 	"""Create a test context with our test filters and DBRejectedLogsHandler registered"""
 	# Purge database to avoid interference between tests
 	context = DevAmpelContext.load(testing_config, purge_db=True)
 
 	# Register dummy units
-	from ampel.test import dummy
+	from ampel.test import dummy  # noqa: PLC0415
 	for name, klass in dummy.__dict__.items():
 		if name.startswith('Dummy'):
 			context.register_unit(klass)
@@ -99,7 +100,6 @@ def test_context(_patch_mongo, testing_config):
 	context.register_unit(AcceptingDebugFilter)
 
 	# Register DBRejectedLogsHandler
-	from ampel.alert.reject.DBRejectedLogsHandler import DBRejectedLogsHandler
 	context.register_unit(DBRejectedLogsHandler)
 
 	# Enable rejected collections for our test channels
@@ -155,12 +155,12 @@ def run_alert_consumer(
 	ac.run()
 
 
-def test_case_1_info_logger_info_filter_passes(test_context, simple_alert, capsys):
+def test_case_1_info_logger_info_filter_passes(alert_context, simple_alert, capsys):
 	"""
 	Case 1: proceed() with log level INFO, filter logs at INFO level, alert passes
 	Expected: Log to console (should PASS even before fix)
 	"""
-	run_alert_consumer(test_context, "AcceptingInfoFilter", simple_alert)
+	run_alert_consumer(alert_context, "AcceptingInfoFilter", simple_alert)
 
 	# Should have some output (INFO logs visible)
 	# Just verify it ran without crashing
@@ -168,7 +168,7 @@ def test_case_1_info_logger_info_filter_passes(test_context, simple_alert, capsy
 	assert captured.out is not None
 
 
-def test_case_2_info_logger_debug_filter_passes(test_context, simple_alert, capsys):
+def test_case_2_info_logger_debug_filter_passes(alert_context, simple_alert, capsys):
 	"""
 	Case 2: proceed() with log level INFO, filter logs at DEBUG level, alert passes
 	Expected: No log output (DEBUG suppressed at INFO level)
@@ -176,7 +176,7 @@ def test_case_2_info_logger_debug_filter_passes(test_context, simple_alert, caps
 	This test currently PASSES but demonstrates the limitation:
 	Even if we wanted to see DEBUG logs, they wouldn't appear with INFO level.
 	"""
-	run_alert_consumer(test_context, "AcceptingDebugFilter", simple_alert)
+	run_alert_consumer(alert_context, "AcceptingDebugFilter", simple_alert)
 
 	# DEBUG logs should NOT appear with INFO level logger
 	output = capsys.readouterr().out
@@ -184,7 +184,7 @@ def test_case_2_info_logger_debug_filter_passes(test_context, simple_alert, caps
 
 
 def test_case_3_info_logger_mixed_filter_fails_no_db_log(
-	test_context, simple_alert
+	alert_context, simple_alert
 ):
 	"""
 	Case 3: INFO level logger, mixed INFO+DEBUG filter logs, alert fails
@@ -196,13 +196,13 @@ def test_case_3_info_logger_mixed_filter_fails_no_db_log(
 	- On rejection, logs are forwarded to DBRejectedLogsHandler
 	Therefore, DBRejectedLogsHandler should have records
 	"""
-	run_alert_consumer(test_context, "MixedLevelFilter", simple_alert)
+	run_alert_consumer(alert_context, "MixedLevelFilter", simple_alert)
 
 	# Alert should be rejected (MixedLevelFilter returns False)
 	# BEFORE FIX: Filter logger has INFO level, suppressing DEBUG logs
 	# So we should have fewer logs in the rejected collection
 	# Check the TEST_CHANNEL collection for rejected logs
-	rejected_col = test_context.db.get_collection("TEST_CHANNEL")
+	rejected_col = alert_context.db.get_collection("TEST_CHANNEL")
 	rejected_count = rejected_col.count_documents({})
 
 	# AFTER FIX: This should be >= 1 (both INFO and DEBUG logs captured)
@@ -210,7 +210,7 @@ def test_case_3_info_logger_mixed_filter_fails_no_db_log(
 
 
 def test_case_4_debug_logger_debug_filter_fails_with_db_log(
-	test_context, simple_alert
+	alert_context, simple_alert
 ):
 	"""
 	Case 4: DEBUG level logger, DEBUG level filter logs, alert fails
@@ -235,12 +235,12 @@ def test_case_4_debug_logger_debug_filter_fails_with_db_log(
 	- Filter logger accepts all levels (level 0)
 	- DEBUG logs are captured and forwarded to DBRejectedLogsHandler
 	"""
-	run_alert_consumer(test_context, "DebugOnlyFilter", simple_alert)
+	run_alert_consumer(alert_context, "DebugOnlyFilter", simple_alert)
 
 	# Alert should be rejected
 	# BEFORE FIX: Filter logger has INFO level, suppressing DEBUG logs
 	# So we should have 0 logs in the rejected collection
-	rejected_col = test_context.db.get_collection("TEST_CHANNEL")
+	rejected_col = alert_context.db.get_collection("TEST_CHANNEL")
 	rejected_count = rejected_col.count_documents({})
 
 	# AFTER FIX: This should be >= 1 (DEBUG logs captured)
