@@ -26,6 +26,7 @@ Before the fix, only case 1 should pass. All others should fail because:
 - Even when logs are generated, they may not reach DBRejectedLogsHandler properly
 """
 
+import inspect
 import pytest
 from io import StringIO
 import sys
@@ -34,12 +35,12 @@ from ampel.alert.AlertConsumer import AlertConsumer
 from ampel.alert.AmpelAlert import AmpelAlert
 from ampel.abstract.AbsAlertFilter import AbsAlertFilter
 from ampel.dev.DevAmpelContext import DevAmpelContext
-from ampel.log.AmpelLogger import AmpelLogger, INFO, DEBUG
 from ampel.model.ingest.FilterModel import FilterModel
 from ampel.model.ingest.IngestBody import IngestBody
 from ampel.model.ingest.IngestDirective import IngestDirective
 from ampel.model.ingest.T1Combine import T1Combine
 from ampel.model.ingest.T2Compute import T2Compute
+from ampel.model.UnitModel import UnitModel
 
 
 # Define test filters that log at different levels
@@ -73,8 +74,8 @@ class AcceptingInfoFilter(AbsAlertFilter):
 
 
 @pytest.fixture
-def test_context(_patch_mongo, testing_config):
-    """Create a test context with our test filters registered"""
+def test_context(_patch_mongo, testing_config, _dummy_units):
+    """Create a test context with our test filters and DBRejectedLogsHandler registered"""
     context = DevAmpelContext.load(testing_config)
     
     # Register test filters
@@ -82,6 +83,13 @@ def test_context(_patch_mongo, testing_config):
     context.register_unit(DebugOnlyFilter)
     context.register_unit(MixedLevelFilter)
     context.register_unit(AcceptingInfoFilter)
+    
+    # Register DBRejectedLogsHandler
+    from ampel.alert.reject.DBRejectedLogsHandler import DBRejectedLogsHandler
+    context.register_unit(DBRejectedLogsHandler)
+    
+    # Enable rejected collections for our test channels
+    context.db.enable_rejected_collections(['TEST_CHANNEL'])
     
     return context
 
@@ -146,7 +154,6 @@ class TestFilterLoggingBehavior:
             ac.run()
             
             # Should have some output (INFO logs visible)
-            output = captured_output.getvalue()
             # Just verify it ran without crashing
             
         finally:
@@ -218,13 +225,13 @@ class TestFilterLoggingBehavior:
     ):
         """
         Case 3: INFO level logger, mixed INFO+DEBUG filter logs, alert fails
-        Expected: No log to DB (because filter logger has wrong level - FAILS before fix)
+        Expected: Logs saved to DB (AFTER FIX - filter logger has correct level)
         
-        This is a KEY TEST CASE. Before the fix:
-        - Filter logger has INFO level, so:
-        - DEBUG logs are suppressed
-        - INFO logs might not reach the handler properly
-        Therefore, DBRejectedLogsHandler should have FEWER records than expected
+        This is a KEY TEST CASE. After the fix:
+        - Filter logger inherits DEBUG level from AlertConsumer
+        - Both INFO and DEBUG logs are captured
+        - On rejection, logs are forwarded to DBRejectedLogsHandler
+        Therefore, DBRejectedLogsHandler should have records
         """
         # Enable rejected collection
         test_context.db.enable_rejected_collections(["TEST_CHANNEL"])
@@ -234,9 +241,7 @@ class TestFilterLoggingBehavior:
             filter=FilterModel(
                 unit="MixedLevelFilter",
                 reject={
-                    'log': {
-                        'unit': 'DBRejectedLogsHandler'
-                    }
+                    'log': UnitModel(unit='DBRejectedLogsHandler')
                 }
             ),
             ingest=IngestBody(
@@ -273,9 +278,8 @@ class TestFilterLoggingBehavior:
         rejected_col = test_context.db.get_collection("TEST_CHANNEL")
         rejected_count = rejected_col.count_documents({})
         
-        # BEFORE FIX: This should be 0 or minimal (DEBUG logs lost)
         # AFTER FIX: This should be >= 1 (both INFO and DEBUG logs captured)
-        assert rejected_count == 0, f"Expected 0 rejected logs before fix, got {rejected_count}"
+        assert rejected_count >= 1, f"Expected at least 1 rejected log after fix, got {rejected_count}"
 
     
     def test_case_4_debug_logger_debug_filter_fails_with_db_log(
@@ -312,9 +316,7 @@ class TestFilterLoggingBehavior:
             filter=FilterModel(
                 unit="DebugOnlyFilter",
                 reject={
-                    'log': {
-                        'unit': 'DBRejectedLogsHandler'
-                    }
+                    'log': UnitModel(unit='DBRejectedLogsHandler')
                 }
             ),
             ingest=IngestBody(
@@ -350,10 +352,9 @@ class TestFilterLoggingBehavior:
         rejected_col = test_context.db.get_collection("TEST_CHANNEL")
         rejected_count = rejected_col.count_documents({})
         
-        # BEFORE FIX: This should be 0 (DEBUG logs lost)
         # AFTER FIX: This should be >= 1 (DEBUG logs captured)
-        assert rejected_count == 0, \
-            f"Expected 0 rejected logs before fix, got {rejected_count}"
+        assert rejected_count >= 1, \
+            f"Expected at least 1 rejected log after fix, got {rejected_count}"
 
 
 class TestFilterLoggerLevelPropagation:
@@ -368,8 +369,6 @@ class TestFilterLoggerLevelPropagation:
         
         This test checks the ORDER of operations to ensure the fix is applied.
         """
-        import inspect
-        
         proceed_source = inspect.getsource(AlertConsumer.proceed)
         
         # Find positions of key operations
@@ -389,8 +388,6 @@ class TestFilterLoggerLevelPropagation:
         """
         Verify that FilterBlocksHandler is NOT created in __init__().
         """
-        import inspect
-        
         init_source = inspect.getsource(AlertConsumer.__init__)
         
         # FilterBlocksHandler should NOT be instantiated in __init__

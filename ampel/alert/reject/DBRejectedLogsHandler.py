@@ -42,6 +42,10 @@ class DBRejectedLogsHandler(ContextUnit):
 
 
 	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.log_dicts = []
+		self.prev_record = None
+		self.run_id = None
 		"""
 		:param single_rej_col:
 		- False: rejected logs are saved in channel specific collections
@@ -74,6 +78,9 @@ class DBRejectedLogsHandler(ContextUnit):
 		try:
 
 			rd = record.__dict__
+			# Check if we have previous records
+			if not self.log_dicts:
+				return
 			pd = self.log_dicts[-1]
 
 			# Same flag, date (+- 1 sec), tran_id and chans
