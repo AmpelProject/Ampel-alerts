@@ -36,9 +36,11 @@ class DBRejectedLogsHandler(ContextUnit):
 	single_rej_col: bool = False
 	aggregate_interval: int = 1
 	flush_len: int = 1000
-	log_dicts: list[dict[str, Any]] = []
-	prev_record: LightLogRecord | LogRecord | None = None
-	run_id: int | list[int] | None = None
+	# NOTE: These were class variables which caused test isolation issues.
+	# Now they are instance variables initialized in __init__
+	# log_dicts: list[dict[str, Any]] = []
+	# prev_record: LightLogRecord | LogRecord | None = None
+	# run_id: int | list[int] | None = None
 
 
 	def __init__(self, **kwargs):
@@ -78,14 +80,11 @@ class DBRejectedLogsHandler(ContextUnit):
 		try:
 
 			rd = record.__dict__
-			# Check if we have previous records
-			if not self.log_dicts:
-				return
-			pd = self.log_dicts[-1]
+			pd = self.log_dicts[-1] if self.log_dicts else None
 
 			# Same flag, date (+- 1 sec), tran_id and chans
 			if (
-				self.prev_record and rd['alert'] == pd['alert'] and rd.get('extra') == pd.get('extra') and
+				pd and self.prev_record and rd.get('alert', rd.get('extra', {}).get('a')) == pd.get('alert', pd.get('extra', {}).get('a')) and rd.get('extra') == pd.get('extra') and
 				record.created - self.prev_record.created < self.aggregate_interval
 			):
 
@@ -107,9 +106,15 @@ class DBRejectedLogsHandler(ContextUnit):
 				# the corresponding extra items will be overwritten (and thus ignored)
 				d = {k: rd["extra"][k] for k in rd["extra"]} if "extra" in rd else {}
 
-				# 'alert' and 'stock' must exist in the log record,
+				# 'alert' and 'stock' must exist in the log record or extra,
 				# otherwise, the AP made a mistake
-				d['_id'] = rd['alert']
+				# Note: alert id may be in rd['alert'] or in rd['extra']['a']
+				alert_id = rd.get('alert')
+				if not alert_id and isinstance(rd.get('extra'), dict):
+					alert_id = rd['extra'].get('a')
+				if not alert_id:
+					raise ValueError(f"Cannot determine alert id from record. Keys: {list(rd.keys())}")
+				d['_id'] = alert_id
 				d['stock'] = rd['stock']
 				d['ts'] = int(time())
 

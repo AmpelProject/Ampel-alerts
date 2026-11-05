@@ -74,9 +74,16 @@ class AcceptingInfoFilter(AbsAlertFilter):
 
 
 @pytest.fixture
-def test_context(_patch_mongo, testing_config, _dummy_units):
+def test_context(_patch_mongo, testing_config):
     """Create a test context with our test filters and DBRejectedLogsHandler registered"""
-    context = DevAmpelContext.load(testing_config)
+    # Purge database to avoid interference between tests
+    context = DevAmpelContext.load(testing_config, purge_db=True)
+    
+    # Register dummy units
+    from ampel.test import dummy
+    for name, klass in dummy.__dict__.items():
+        if name.startswith('Dummy'):
+            context.register_unit(klass)
     
     # Register test filters
     context.register_unit(InfoOnlyFilter)
@@ -233,9 +240,6 @@ class TestFilterLoggingBehavior:
         - On rejection, logs are forwarded to DBRejectedLogsHandler
         Therefore, DBRejectedLogsHandler should have records
         """
-        # Enable rejected collection
-        test_context.db.enable_rejected_collections(["TEST_CHANNEL"])
-        
         directive = IngestDirective(
             channel="TEST_CHANNEL",
             filter=FilterModel(
@@ -271,7 +275,6 @@ class TestFilterLoggingBehavior:
         ac.run()
         
         # Alert should be rejected (MixedLevelFilter returns False)
-        
         # BEFORE FIX: Filter logger has INFO level, suppressing DEBUG logs
         # So we should have fewer logs in the rejected collection
         # Check the TEST_CHANNEL collection for rejected logs
@@ -308,9 +311,6 @@ class TestFilterLoggingBehavior:
         - Filter logger accepts all levels (level 0)
         - DEBUG logs are captured and forwarded to DBRejectedLogsHandler
         """
-        # Enable rejected collection
-        test_context.db.enable_rejected_collections(["TEST_CHANNEL"])
-        
         directive = IngestDirective(
             channel="TEST_CHANNEL",
             filter=FilterModel(
@@ -346,7 +346,6 @@ class TestFilterLoggingBehavior:
         ac.run()
         
         # Alert should be rejected
-        
         # BEFORE FIX: Filter logger has INFO level, suppressing DEBUG logs
         # So we should have 0 logs in the rejected collection
         rejected_col = test_context.db.get_collection("TEST_CHANNEL")
