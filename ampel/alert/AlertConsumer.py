@@ -126,11 +126,6 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		if AmpelLogger.has_verbose_console(self.context, self.log_profile):
 			logger.log(VERBOSE, "AlertConsumer setup")
 
-		# Load filter blocks
-		self._fbh = FilterBlocksHandler(
-			self.context, logger, self.directives, self.process_name, self.db_log_format
-		)
-
 		logger.info("AlertConsumer setup completed")
 
 
@@ -218,21 +213,26 @@ class AlertConsumer(AbsEventUnit, AlertConsumerModel):
 		:raises: LogFlushingError, PyMongoError
 		"""
 
-		# Setup stats
-		#############
-
-		stats = AlertConsumerMetrics(self._fbh.chan_names)
-
+		# Setup logging FIRST to ensure proper logger level propagation
+		###############
 		event_hdlr.set_tier(0)
 		run_id = event_hdlr.get_run_id()
-
-		# Setup logging
-		###############
 
 		logger = AmpelLogger.from_profile(
 			self.context, self.log_profile, run_id,
 			base_flag = LogFlag.T0 | LogFlag.CORE | self.base_log_flag
 		)
+
+		# Load filter blocks WITH THE PROPER LOGGER
+		#############################################
+		self._fbh = FilterBlocksHandler(
+			self.context, logger, self.directives, self.process_name, self.db_log_format
+		)
+
+		# Setup stats
+		#############
+
+		stats = AlertConsumerMetrics(self._fbh.chan_names)
 
 		self._alert_supplier.set_logger(logger)
 
