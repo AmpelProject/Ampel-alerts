@@ -107,6 +107,7 @@ class FilterBlock:
 				sub_type = AbsAlertFilter,
 				logger = AmpelLogger.get_logger(
 					name = "buf_" + self.chan_str,
+					force_refresh = True,
 					base_flag = (getattr(logger, 'base_flag', 0) & ~LogFlag.CORE) | LogFlag.UNIT,
 					console = False,
 					handlers = [self.buf_hdlr]

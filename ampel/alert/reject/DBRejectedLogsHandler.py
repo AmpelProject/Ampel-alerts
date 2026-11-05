@@ -36,18 +36,12 @@ class DBRejectedLogsHandler(ContextUnit):
 	single_rej_col: bool = False
 	aggregate_interval: int = 1
 	flush_len: int = 1000
-	# NOTE: These were class variables which caused test isolation issues.
-	# Now they are instance variables initialized in __init__
-	# log_dicts: list[dict[str, Any]] = []
-	# prev_record: LightLogRecord | LogRecord | None = None
-	# run_id: int | list[int] | None = None
+	log_dicts: list[dict[str, Any]] = []
+	prev_record: LightLogRecord | LogRecord | None = None
+	run_id: int | list[int] | None = None
 
 
 	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
-		self.log_dicts = []
-		self.prev_record = None
-		self.run_id = None
 		"""
 		:param single_rej_col:
 		- False: rejected logs are saved in channel specific collections
