@@ -1,0 +1,24 @@
+# Units of this distribution
+#
+# DistConfigBuilder auto-discovers units whose class ancestry includes
+# AmpelABC. Units that do not (e.g. DBRejectedLogsHandler, which derives
+# from ContextUnit) must be registered explicitly here, since the `unit:`
+# key in ampel.yml is ignored by the builder.
+#
+# Context unit
+- ampel.alert.AlertConsumer
+
+# Aux unit
+- ampel.alert.FilteringAlertSupplier
+- ampel.dev.UnitTestAlertSupplier
+- ampel.alert.load.TarAlertLoader
+- ampel.alert.load.FileAlertLoader
+- ampel.alert.load.DirAlertLoader
+- ampel.alert.load.DirFileNamesLoader
+- ampel.alert.load.DirTaggedAlertLoader
+
+# Logical unit
+- ampel.alert.filter.BasicMultiFilter
+
+# Reject handler
+- ampel.alert.reject.DBRejectedLogsHandler
