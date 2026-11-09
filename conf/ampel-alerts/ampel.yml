@@ -1,21 +1,2 @@
-unit:
-# Context unit
-- ampel.alert.AlertConsumer
- 
-# Aux unit
-- ampel.alert.FilteringAlertSupplier
-- ampel.dev.UnitTestAlertSupplier
-- ampel.alert.load.TarAlertLoader
-- ampel.alert.load.FileAlertLoader
-- ampel.alert.load.DirAlertLoader
-- ampel.alert.load.DirFileNamesLoader
-- ampel.alert.load.DirTaggedAlertLoader
-  
-# Logical unit
-- ampel.alert.filter.BasicMultiFilter
-
-# Reject handler
-- ampel.alert.reject.DBRejectedLogsHandler
-
 template:
   ingest_alerts: ampel.template.EasyAlertConsumerTemplate

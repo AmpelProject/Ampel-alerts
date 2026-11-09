@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ampel-alerts"
-version = "0.10.4a1"
+version = "0.10.4a2"
 description = "Alert support for the Ampel system"
 authors = ["Valery Brinnel"]
 maintainers = ["Jakob van Santen <jakob.van.santen@desy.de>"]
